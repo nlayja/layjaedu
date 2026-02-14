@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premios Divertidos - Versión 2 Minutos</title>
+<style>
+  body {
+    margin: 0;
+    padding: 10px;
+    font-family: 'Comic Sans MS', sans-serif;
+    background: #1e90ff linear-gradient(to bottom, #1e90ff, #87ceeb, #ffffff);
+    background-attachment: fixed;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+    height: 100vh;
+    box-sizing: border-box;
+    overflow: hidden; 
+  }
+
+  #sidebar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 260px;
+    flex-shrink: 0;
+  }
+
+  #timer-visual {
+    width: 100%;
+    background: #ff0000;
+    color: white;
+    padding: 10px 0;
+    border-radius: 50px;
+    font-size: 1.8em;
+    font-weight: bold;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    border: 4px solid white;
+  }
+
+  #opciones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .opcion {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+
+  .contenedor-img {
+    width: 95px; 
+    height: 95px;
+    border-radius: 50%;
+    border: 5px solid #ffcf00;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+
+  .opcion img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .etiqueta {
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    margin-top: 8px; 
+    font-size: 0.95em;
+    text-transform: uppercase;
+  }
+
+  .opcion:hover { transform: scale(1.08); }
+
+  #contenido {
+    flex-grow: 1;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 40px;
+    border: 12px solid #ffcf00; 
+    padding: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    display: none;
+    height: calc(100vh - 40px);
+    box-sizing: border-box;
+    overflow-y: auto;
+  }
+
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 20px;
+    background: #000;
+  }
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div id="timer-visual">⏱️ <span id="reloj">02:00</span></div>
+  <div id="opciones">
+    <div class="opcion" onclick="reproducirMusica()" onmouseenter="decir('Música')">
+      <div class="contenedor-img"><img src="imagenes/musica.jpg" alt=""></div>
+      <span class="etiqueta">Música</span>
+    </div>
+    <div class="opcion" onclick="contarChiste()" onmouseenter="decir('Chiste')">
+      <div class="contenedor-img"><img src="imagenes/cara_feliz.png" alt=""></div>
+      <span class="etiqueta">Chiste</span>
+    </div>
+    <div class="opcion" onclick="contarCuento()" onmouseenter="decir('Cuento')">
+      <div class="contenedor-img"><img src="imagenes/libro.png" alt=""></div>
+      <span class="etiqueta">Cuento</span>
+    </div>
+    <div class="opcion" onclick="iniciarJuego()" onmouseenter="decir('Juego')">
+      <div class="contenedor-img"><img src="imagenes/corazon_sonriente.png" alt=""></div>
+      <span class="etiqueta">Juego</span>
+    </div>
+  </div>
+</div>
+
+<div id="contenido"></div>
+
+<script>
+// --- BANCO DE DATOS ---
+const chistes = [
+  "¿Qué le dice un pez a otro pez?.... ¡Nada! Jajajaja",
+  "¿Qué hace una abeja en el gimnasio?.... ¡Zumba! Jajajaja",
+  "¿Cuál es el colmo de un robot?.... ¡Tener nervios de acero! Jajajaja",
+  "¿Cómo se dice pañuelo en japonés?.... ¡Saca-moko! Jajajaja",
+  "¿Qué le dice una gallina a un pato?.... Lo que tú haces con la pata, yo lo hago con el huevo. Jajajaja",
+  "¿Por qué el libro de matemáticas estaba triste?.... ¡Porque tenía muchos problemas! Jajajaja",
+  "¿Qué le dice el 0 al 8?.... ¡Me gusta tu cinturón! Jajajaja",
+  "¿Cómo se dice perro en inglés?.... Dog. ¿Y veterinario?.... Dog-tor. Jajajaja",
+  "¿Cuál es el animal que es dos veces animal?.... El gato, porque es gato y araña. Jajajaja",
+  "¿Qué le dice un jaguar a otro jaguar?.... Jaguar you. Jajajaja"
+];
+
+const cuentos = [
+  "Había una vez un pequeño astronauta que viajó a la luna en un cohete de chocolate.",
+  "En un bosque mágico, los árboles daban caramelos en lugar de manzanas.",
+  "Había un gatito que creía ser un tigre y rugía muy fuerte: ¡miau miau!",
+  "Un robot llamado Bip descubrió que podía bailar mejor que cualquier humano.",
+  "Una hormiga valiente construyó un barco con una hoja para cruzar un gran charco.",
+  "El sol y la luna eran amigos y se enviaban cartas de colores cada vez que se cruzaban.",
+  "Había un pincel mágico que pintaba animales que cobraban vida por la noche.",
+  "Una nube pequeña no quería llover agua, ¡prefería llover confeti de colores!",
+  "Un dinosaurio muy alto usaba las nubes como almohada para dormir la siesta.",
+  "El ratón Pérez se jubiló y ahora una mariposa brillante es la que recoge los dientes."
+];
+
+const canciones = [
+  "audios/cancion.mp3",
+  "audios/cancion2.mp3",
+  "audios/cancion3.mp3"
+];
+
+let temporizador;
+// --- CAMBIO AQUÍ: 120 segundos = 2 minutos ---
+let tiempoRestante = 120; 
+
+function decir(texto) {
+  window.speechSynthesis.cancel();
+  const mensaje = new SpeechSynthesisUtterance(texto);
+  mensaje.lang = 'es-MX';
+  window.speechSynthesis.speak(mensaje);
+}
+
+function limpiarContenido() {
+  const cont = document.getElementById('contenido');
+  cont.innerHTML = '';
+  cont.style.display = 'block';
+}
+
+function reproducirMusica() {
+  limpiarContenido();
+  const tema = canciones[Math.floor(Math.random() * canciones.length)];
+  decir("¡A bailar!");
+  document.getElementById('contenido').innerHTML = `
+    <h2 style="text-align:center; color:#1e90ff;">🎵 ¡Baila con la música!</h2>
+    <div style="display:flex; justify-content:center; align-items:center; height:80%;">
+       <audio controls autoplay style="width:85%;"><source src="${tema}" type="audio/mpeg"></audio>
+    </div>
+  `;
+}
+
+function contarChiste() {
+  limpiarContenido();
+  const item = chistes[Math.floor(Math.random() * chistes.length)];
+  decir(item);
+  document.getElementById('contenido').innerHTML = `
+    <div style="text-align:center; padding-top:60px;">
+      <h2 style="font-size:5em; margin:0;">😂</h2>
+      <p style="font-size:2.5em; color:#333; font-weight:bold; padding:20px;">${item}</p>
+      <button onclick="contarChiste()" style="padding:15px 30px; border-radius:20px; border:none; background:#ffcf00; font-family:'Comic Sans MS'; cursor:pointer; font-weight:bold;">¡OTRO CHISTE!</button>
+    </div>
+  `;
+}
+
+function contarCuento() {
+  limpiarContenido();
+  const item = cuentos[Math.floor(Math.random() * cuentos.length)];
+  decir(item);
+  document.getElementById('contenido').innerHTML = `
+    <div style="text-align:center; padding:30px;">
+      <h2 style="font-size:2.5em; color:#1e90ff;">📖 UN CUENTO MÁGICO</h2>
+      <p style="font-size:2em; line-height:1.4; color:#444; margin-bottom:30px;">${item}</p>
+      <button onclick="contarCuento()" style="padding:15px 30px; border-radius:20px; border:none; background:#ffcf00; font-family:'Comic Sans MS'; cursor:pointer; font-weight:bold;">¡OTRO CUENTO!</button>
+    </div>
+  `;
+}
+
+function iniciarJuego() {
+  limpiarContenido();
+  decir("¡A jugar!");
+  document.getElementById('contenido').innerHTML = `<iframe src="pacman.html"></iframe>`;
+}
+
+function comenzarReloj() {
+  const display = document.getElementById('reloj');
+  temporizador = setInterval(() => {
+    let min = Math.floor(tiempoRestante / 60);
+    let seg = tiempoRestante % 60;
+    display.textContent = `${min < 10 ? '0' + min : min}:${seg < 10 ? '0' + seg : seg}`;
+    if (tiempoRestante <= 0) { clearInterval(temporizador); finalizar(); }
+    tiempoRestante--;
+  }, 1000);
+}
+
+function finalizar() {
+  document.getElementById('sidebar').style.display = 'none';
+  const cont = document.getElementById('contenido');
+  cont.style.display = 'block';
+  cont.innerHTML = `
+    <div style="text-align:center; padding-top:20vh;">
+      <h2 style="font-size:5em;">⏰</h2>
+      <h2 style="font-size:3em; color:#1e90ff;">¡Tiempo terminado!</h2>
+      <button onclick="location.reload()" style="padding:20px 50px; font-size:1.8em; border-radius:30px; background:#ffcf00; border:none; cursor:pointer; font-family:'Comic Sans MS';">REINICIAR</button>
+    </div>
+  `;
+  decir("¡Se acabó el tiempo!");
+}
+
+window.onload = comenzarReloj;
+</script>
+</body>
+</html>

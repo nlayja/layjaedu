@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Camino de Letras</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: "Poppins", Arial, sans-serif;
+  background: #f7f3ff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ===== OVERLAY INICIO ===== */
+#overlay-inicio {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg,#00bcd4,#26a69a);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  color: white;
+  text-align: center;
+}
+
+#overlay-inicio h1 {
+  font-size: 42px;
+  margin-bottom: 30px;
+}
+
+.btn-inicio {
+  font-size: 24px;
+  padding: 18px 36px;
+  border: none;
+  border-radius: 30px;
+  background: #ffffff;
+  color: #00bcd4;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.btn-inicio:hover {
+  transform: scale(1.08);
+}
+
+/* ===== Botón cerrar ===== */
+#cerrar {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  font-size: 32px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: #ff6f61;
+}
+
+/* ===== Camino de progreso ===== */
+.camino {
+  display: flex;
+  gap: 15px;
+  margin: 20px 0;
+}
+.casilla {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #ccc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  color: white;
+  position: relative;
+}
+.casilla.completado { background-color: #4CAF50; }
+.casilla::after {
+  content: "⭐";
+  position: absolute;
+  font-size: 18px;
+  bottom: -10px;
+  right: -10px;
+}
+
+/* ===== Imágenes ===== */
+.contenedor-imagenes {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin: 40px auto;
+  flex-wrap: nowrap;
+}
+.imagen-con-numero {
+  position: relative;
+}
+.imagen-boton {
+  width: 250px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.imagen-boton:hover { transform: scale(1.05); }
+
+.numero-imagen {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 30px;
+  height: 30px;
+  background: #ccc;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: white;
+}
+.numero-imagen.completado { background: #4CAF50; }
+
+/* ===== Navegación ===== */
+.botones-navegacion {
+  display: flex;
+  justify-content: flex-end;
+  margin: 20px 40px;
+  width: 100%;
+}
+.botones-navegacion button {
+  padding: 12px 28px;
+  font-size: 18px;
+  border-radius: 20px;
+  border:none;
+  cursor:pointer;
+  background: linear-gradient(135deg,#ffb347,#ff8c00);
+  color:white;
+  font-weight:bold;
+  transition:0.25s;
+}
+.botones-navegacion button:hover {
+  transform:scale(1.05);
+  background: linear-gradient(135deg,#ffa726,#fb8c00);
+}
+</style>
+</head>
+
+<body>
+
+<!-- OVERLAY INICIO (SIEMPRE APARECE) -->
+<div id="overlay-inicio">
+  <h1>Layja Edu</h1>
+  <button class="btn-inicio" onclick="comenzarTodo()">VER DEMO 🚀</button>
+</div>
+
+<!-- Botón cerrar -->
+<button id="cerrar">✖</button>
+
+<!-- Camino de progreso -->
+<div class="camino">
+  <div class="casilla" id="casilla1">1</div>
+  <div class="casilla" id="casilla2">2</div>
+  <div class="casilla" id="casilla3">3</div>
+  <div class="casilla" id="casilla4">4</div>
+  <div class="casilla" id="casilla5">5</div>
+  <div class="casilla" id="casilla6">6</div>
+</div>
+
+<!-- Imágenes -->
+<div class="contenedor-imagenes">
+  <div class="imagen-con-numero">
+    <img class="imagen-boton" src="imagenes/vocales.jpg" onclick="location.href='vocales.html'">
+    <div class="numero-imagen" id="num1">1</div>
+  </div>
+  <div class="imagen-con-numero">
+    <img class="imagen-boton" src="imagenes/bloque1.jpg" onclick="location.href='bloque1.html'">
+    <div class="numero-imagen" id="num2">2</div>
+  </div>
+  <div class="imagen-con-numero">
+    <img class="imagen-boton" src="imagenes/bloque2.jpg" onclick="location.href='bloque2.html'">
+    <div class="numero-imagen" id="num3">3</div>
+  </div>
+  <div class="imagen-con-numero">
+    <img class="imagen-boton" src="imagenes/repaso1.jpg" onclick="location.href='repaso1.html'">
+    <div class="numero-imagen" id="num4">4</div>
+  </div>
+</div>
+
+<!-- Botón siguiente -->
+<div class="botones-navegacion">
+  <button onclick="location.href='pagina2.html'">Siguiente ➡</button>
+</div>
+
+<script>
+// ===== OVERLAY (SIN localStorage) =====
+function comenzarTodo() {
+  document.getElementById("overlay-inicio").style.display = "none";
+}
+
+// ===== PROGRESO =====
+function marcarCompletadas(indices) {
+  indices.forEach(i => {
+    document.getElementById("casilla"+i).classList.add("completado");
+    const num = document.getElementById("num"+i);
+    if (num) num.classList.add("completado");
+  });
+}
+
+let progreso = JSON.parse(localStorage.getItem("progreso")) || [];
+marcarCompletadas(progreso);
+</script>
+
+</body>
+</html>

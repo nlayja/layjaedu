@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Aprende Jugando - Sílabas</title>
+
+<style>
+:root{
+  --color-correcto: #28a745;   /* verde */
+  --color-incorrecto: #ff4d4d; /* rojo */
+  --color-base-carta: #ffffff;
+}
+
+
+body{
+  font-family:Poppins, Arial, sans-serif;
+  background:#f7f3ff;
+  text-align:center;
+  margin:0;
+}
+
+#escena{
+  position:relative;
+  width:100%;
+  height:350px;
+  margin-top:20px;
+}
+
+#personaje{
+  position:absolute;
+  width:120px;
+  left:50%;
+  top:50%;
+  transform:translate(-50%, -50%);
+  transition:left 0.6s ease, top 0.6s ease;
+}
+
+/* Animación de salto normal */
+@keyframes salto{
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-60px); } 
+  100% { transform: translateY(0); }
+}
+
+/* Pequeño salto inicial al centrar */
+@keyframes saltoInicio{
+  0% { transform: translate(-50%, -50%) translateY(0); }
+  50% { transform: translate(-50%, -50%) translateY(-30px); }
+  100% { transform: translate(-50%, -50%) translateY(0); }
+}
+
+/* Rebote vertical sobre la carta correcta */
+@keyframes reboteCorrecto{
+  0% { transform: translateY(0); }
+  25% { transform: translateY(-20px); }
+  50% { transform: translateY(0); }
+  75% { transform: translateY(-20px); }
+  100% { transform: translateY(0); }
+}
+
+#btnEscuchar{
+  font-size:26px;
+  padding:16px 36px;
+  border-radius:18px;
+  background:#8a2be2;
+  color:white;
+  border:none;
+  cursor:pointer;
+  margin-top:15px;
+}
+
+#barraContenedor{
+  width:300px;
+  height:12px;
+  background:#ddd;
+  margin:10px auto;
+  border-radius:6px;
+}
+
+#barraProgreso{
+  width:0%;
+  height:100%;
+  background:#8a2be2;
+  border-radius:6px;
+}
+
+#contenedorSilabas{
+  margin-top:20px;
+  display:flex;
+  justify-content:center;
+  gap:20px;
+  flex-wrap:wrap;
+}
+
+.silaba{
+  padding:22px 34px;
+  font-size:38px;
+  font-weight:bold;
+  background:white;
+  border-radius:18px;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(0,0,0,.15);
+}
+
+.silaba.incorrecta{
+  animation:temblar 1.5s;
+  background: var(--color-incorrecto);
+}
+
+@keyframes temblar{
+  0%{transform:translateX(0)}
+  25%{transform:translateX(-5px)}
+  50%{transform:translateX(5px)}
+  75%{transform:translateX(-5px)}
+  100%{transform:translateX(0)}
+}
+
+#contador{
+  font-size:18px;
+  margin-top:8px;
+}
+
+#festejo{
+  position:absolute;
+  inset:0;
+  display:none;
+  background:rgba(255,255,255,.9);
+  align-items:center;
+  justify-content:center;
+  font-size:32px;
+}
+</style>
+</head>
+
+<body>
+
+<button id="btnEscuchar" onclick="reproducirSilaba()">🔊 Escuchar</button>
+
+<div id="barraContenedor">
+  <div id="barraProgreso"></div>
+</div>
+
+<div id="contador">⭐ Aciertos: 0 / 5</div>
+
+<div id="escena">
+  <img src="imagenes/maestra_Nohemi.png" id="personaje">
+  <div id="festejo">🎉 ¡Muy bien! 🎉</div>
+</div>
+
+<div id="contenedorSilabas"></div>
+
+<script>
+let juegosSilabas = parseInt(localStorage.getItem("juegosSilabas")) || 0;
+const silabas = [
+  "ma","me","mi","mo","mu",
+  "pa","pe","pi","po","pu",
+  "sa","se","si","so","su"
+];
+let silabaActual="";
+let silabaAnterior="";
+let puedeSeleccionar=true;
+let reproduciendoAcierto=false;
+
+const audio = new Audio();
+const audioCorrecto = new Audio("audios/par_correcto.mp3");
+const audioError = new Audio("audios/error.mp3");
+
+function elegirSilaba(){
+  do{
+    silabaActual = silabas[Math.floor(Math.random()*silabas.length)];
+  }while(silabaActual === silabaAnterior);
+  silabaAnterior = silabaActual;
+  generarOpciones();
+
+  // Centrar la imagen al inicio
+  const personaje = document.getElementById("personaje");
+  personaje.style.left = "50%";
+  personaje.style.top = "50%";
+  personaje.style.transform = "translate(-50%, -50%)";
+  personaje.style.animation = "saltoInicio 0.6s";
+  setTimeout(()=>{ personaje.style.animation = ""; }, 600);
+}
+
+function generarOpciones(){
+  const cont=document.getElementById("contenedorSilabas");
+  cont.innerHTML="";
+  let opciones=[silabaActual];
+  while(opciones.length<4){
+    let s=silabas[Math.floor(Math.random()*silabas.length)];
+    if(!opciones.includes(s)) opciones.push(s);
+  }
+  opciones.sort(()=>Math.random()-0.5);
+
+  opciones.forEach(s=>{
+    const d=document.createElement("div");
+    d.className="silaba";
+    d.textContent=s;
+    d.onclick=()=>saltar(d);
+    cont.appendChild(d);
+  });
+}
+
+function reproducirSilaba(){
+  if(reproduciendoAcierto) return;
+  puedeSeleccionar=false;
+  document.getElementById("btnEscuchar").style.background="#6a1b9a";
+
+  const barra=document.getElementById("barraProgreso");
+  barra.style.width="0%";
+
+  audio.src="audios/"+silabaActual+".mp3";
+  audio.currentTime=0;
+  audio.play();
+
+  const i=setInterval(()=>{
+    if(audio.duration){
+      barra.style.width=(audio.currentTime/audio.duration*100)+"%";
+    }
+  },50);
+
+  audio.onended=()=>{ clearInterval(i); puedeSeleccionar=true; };
+}
+
+function saltar(el){
+  if(!puedeSeleccionar||reproduciendoAcierto) return;
+  const personaje=document.getElementById("personaje");
+  const rectCarta = el.getBoundingClientRect();
+  const rectEscena = document.getElementById("escena").getBoundingClientRect();
+
+  const objetivoX = rectCarta.left + rectCarta.width/2 - rectEscena.left - personaje.width/2;
+  const objetivoY = rectCarta.top - rectEscena.top - personaje.height - 50;
+
+  // Saltar desde el centro
+  personaje.style.left = "50%";
+  personaje.style.top = "50%";
+  personaje.style.transform = "translate(-50%, -50%)";
+
+  setTimeout(()=>{
+    // Mover a la carta
+    personaje.style.left = objetivoX + "px";
+    personaje.style.top = objetivoY + "px";
+    personaje.style.transform = "translate(-50%, -50%)";
+    personaje.style.animation = "salto 0.8s";
+  },200);
+
+  setTimeout(()=>{
+    personaje.style.animation="";
+
+    if(el.textContent===silabaActual){
+      juegosSilabas++;
+      localStorage.setItem("juegosSilabas",juegosSilabas);
+      document.getElementById("contador").textContent=`⭐ Aciertos: ${juegosSilabas} / 5`;
+      el.style.background="var(--color-correcto)"; el.style.color="white";
+      document.getElementById("festejo").style.display="flex";
+      reproduciendoAcierto=true;
+      audioCorrecto.currentTime=0; audioCorrecto.play();
+
+      // ✅ Rebote EXACTO sobre la carta correcta
+      personaje.style.left = objetivoX + "px";
+      personaje.style.top = objetivoY + "px";
+      personaje.style.transform = "translate(-50%, -50%)";
+      personaje.style.animation = "reboteCorrecto 0.6s infinite";
+
+      audioCorrecto.onended=()=>{
+        document.getElementById("festejo").style.display="none";
+        reproduciendoAcierto=false;
+        personaje.style.animation = "";
+
+        if(juegosSilabas>=5){
+          setTimeout(()=>{ window.location.href="bloque1.html"; },800);
+        }else{
+          elegirSilaba();
+          reproducirSilaba();
+        }
+      };
+
+    }else{
+      el.classList.add("incorrecta");
+      audioError.currentTime=0; audioError.play();
+      setTimeout(()=>{ el.classList.remove("incorrecta"); 
+
+    // 🔊 Reproducir nuevamente la sílaba
+    reproducirSilaba();
+},1500);
+    }
+  },1000);
+}
+
+window.onload=()=>{
+  elegirSilaba();
+  reproducirSilaba();  // Reproduce automáticamente la sílaba al cargar
+};
+</script>
+
+</body>
+</html>

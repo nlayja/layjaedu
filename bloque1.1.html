@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Bloque 1.1 - Aprende Jugando</title>
+
+<style>
+body{
+  margin:0;
+  font-family:"Poppins",Arial,sans-serif;
+  background:#f7f3ff;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding:20px;
+}
+#cerrar{
+  position:fixed;
+  top:10px;
+  right:10px;
+  font-size:32px;
+  cursor:pointer;
+  background:none;
+  border:none;
+  color:#ff6f61;
+}
+.contenedor-bloque{
+  display:flex;
+  gap:20px;
+  width:100%;
+  max-width:1200px;
+}
+.contenedor-imagen img{
+  width:320px;
+  border-radius:10px;
+  box-shadow:0 4px 12px rgba(0,0,0,.3);
+}
+.contenedor-dinamica{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
+h2{
+  text-align:center;
+  color:#6a5acd;
+  margin:0;
+}
+.palabra-completa-contenedor{
+  display:flex;
+  gap:20px;
+  align-items:center;
+}
+.palabra-area{
+  display:flex;
+  gap:10px;
+  min-height:50px;
+  border:2px dashed #aaa;
+  padding:10px;
+  background:white;
+  border-radius:8px;
+}
+.silaba-guia{
+  padding:10px 15px;
+  background:#ddd;
+  border-radius:8px;
+  opacity:.6;
+  font-weight:bold;
+}
+.silaba{
+  padding:10px 15px;
+  background:#ffd700;
+  border-radius:8px;
+  cursor:grab;
+  font-weight:bold;
+  font-size:24px;
+  box-shadow:1px 1px 3px rgba(0,0,0,.2);
+}
+.silaba-correcta{
+  background:#28a745;
+  color:white;
+}
+#estrellas{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(40px,1fr));
+  gap:5px;
+  font-size:22px;
+  color:lightgray;
+}
+.estrella-iluminada{color:gold}
+.botones-navegacion{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+}
+.botones-navegacion button{
+  padding:12px 28px;
+  font-size:24px;
+  border:none;
+  border-radius:20px;
+  background:linear-gradient(135deg,#ffb347,#ff8c00);
+  color:white;
+  cursor:pointer;
+}
+#festejo{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+#palabraCompletada{
+  padding:10px 15px;
+  background:#ffd700;
+  border-radius:8px;
+  font-size:24px;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<button id="cerrar">✖</button>
+
+<div class="contenedor-bloque">
+  <div class="contenedor-imagen">
+    <img src="imagenes/bloque1.jpg">
+  </div>
+
+  <div class="contenedor-dinamica">
+    <h2>Arrastra las sílabas</h2>
+    <div id="estrellas"></div>
+
+    <div class="palabra-completa-contenedor">
+      <div class="palabra-area" id="palabraArea"></div>
+      <div id="palabraCompletada"></div>
+    </div>
+
+    <div id="silabasContainer" style="display:flex;gap:10px;flex-wrap:wrap"></div>
+  </div>
+</div>
+
+<div class="botones-navegacion">
+  <button id="botonSiguiente" style="display:none" onclick="location.href='pagina1.html'">Siguiente ➡</button>
+</div>
+
+<div id="festejo">
+  <img src="imagenes/festejo con niños2.jpg" width="350">
+</div>
+
+<script>
+document.getElementById("cerrar").onclick=()=>{
+  localStorage.removeItem("nino");
+  location.href="pagina1.html";
+};
+
+const palabras=[
+  {palabra:"pozo",silabas:["po","zo"]},
+  {palabra:"papá",silabas:["pa","pá"]},
+  {palabra:"mamá",silabas:["ma","má"]},
+  {palabra:"tapa",silabas:["ta","pa"]},
+  {palabra:"pie",silabas:["pi","e"]},
+  {palabra:"pesa",silabas:["pe","sa"]},
+  {palabra:"pera",silabas:["pe","ra"]},
+  {palabra:"poco",silabas:["po","co"]},
+  {palabra:"paz",silabas:["pa","z"]},
+  {palabra:"paso",silabas:["pa","so"]},
+  {palabra:"sapo",silabas:["sa","po"]},
+  {palabra:"casa",silabas:["ca","sa"]},
+  {palabra:"cama",silabas:["ca","ma"]},
+  {palabra:"coco",silabas:["co","co"]}
+];
+
+const PALABRAS_POR_NIVEL=7;
+let nivelActual=0;
+let indiceNivel=0;
+let indiceSilaba=0;
+let audioEnProceso=false;
+let festejoMostrado=false;
+
+function indiceReal(){ return nivelActual*PALABRAS_POR_NIVEL+indiceNivel; }
+
+// 🌟 Pre-cargar audios
+const audiosSilabas = {};
+const audiosPalabras = {};
+palabras.forEach(p=>{
+  p.silabas.forEach(s=>{
+    if(!audiosSilabas[s]) audiosSilabas[s]=new Audio("audios/"+s+".mp3");
+  });
+  if(!audiosPalabras[p.palabra]) audiosPalabras[p.palabra]=new Audio("audios/"+p.palabra+".mp3");
+});
+
+function inicializarEstrellas(){
+  const d=document.getElementById("estrellas");
+  d.innerHTML="";
+  palabras.forEach(()=>d.innerHTML+="<span>★</span>");
+}
+
+function actualizarEstrella(i){
+  document.querySelectorAll("#estrellas span")[i].classList.add("estrella-iluminada");
+}
+
+function cargarPalabra(i){
+  const area=document.getElementById("palabraArea");
+  const cont=document.getElementById("silabasContainer");
+  const pc=document.getElementById("palabraCompletada");
+  area.innerHTML=""; cont.innerHTML=""; pc.textContent="";
+  indiceSilaba=0;
+
+  palabras[i].silabas.forEach(s=>{
+    const g=document.createElement("div");
+    g.className="silaba-guia";
+    g.textContent=s;
+    area.appendChild(g);
+  });
+
+  // Mezclar sílabas
+  [...palabras[i].silabas].sort(()=>Math.random()-.5).forEach((s,id)=>{
+    const d=document.createElement("div");
+    d.className="silaba";
+    d.textContent=s;
+    d.draggable=true;
+    d.dataset.id=id;
+    d.ondragstart=e=>{
+      if(audioEnProceso){e.preventDefault(); return;}
+      e.dataTransfer.setData("text",s);
+      e.dataTransfer.setData("id",id);
+    };
+    cont.appendChild(d);
+  });
+}
+
+palabraArea.ondragover=e=>e.preventDefault();
+palabraArea.ondrop=e=>{
+  e.preventDefault();
+  const s=e.dataTransfer.getData("text");
+  const id=e.dataTransfer.getData("id");
+  const obj=palabras[indiceReal()];
+
+  if(s===obj.silabas[indiceSilaba]){
+    audioEnProceso=true;
+
+    // Ocultar sílabas pendientes
+    [...silabasContainer.children].forEach(c=>c.style.display="none");
+
+    const d=document.createElement("div");
+    d.className="silaba silaba-correcta";
+    d.textContent=s;
+    palabraArea.replaceChild(d,palabraArea.children[indiceSilaba]);
+
+    // eliminar sílaba original
+    [...silabasContainer.children].forEach(c=>{ if(c.dataset.id===id) c.remove(); });
+
+    // 🔊 reproducir audio de la sílaba pre-cargado
+    const a = audiosSilabas[s];
+    a.currentTime=0;
+    a.play();
+
+    a.onended=()=>{
+      audioEnProceso=false;
+      indiceSilaba++;
+      if(indiceSilaba===obj.silabas.length){
+        // mostrar palabra completa
+        palabraCompletada.textContent=obj.palabra;
+
+        // reproducir audio de la palabra
+        const audioPalabra = audiosPalabras[obj.palabra];
+        audioPalabra.currentTime=0;
+        audioPalabra.play();
+        actualizarEstrella(indiceReal());
+
+        audioPalabra.onended=()=>{
+          // Mantener en pantalla 2 segundos
+          setTimeout(()=>avanzar(),2000);
+        };
+      } else {
+        // mostrar sílabas restantes
+        [...silabasContainer.children].forEach(c=>c.style.display="flex");
+      }
+    };
+  }
+};
+
+function avanzar(){
+  indiceNivel++;
+  if(indiceNivel<PALABRAS_POR_NIVEL && indiceReal()<palabras.length){
+    cargarPalabra(indiceReal());
+  }else{
+    nivelActual++; indiceNivel=0;
+    if(indiceReal()<palabras.length){
+      alert("✨ Nivel "+(nivelActual+1)+" ✨");
+      cargarPalabra(indiceReal());
+    }else{
+      mostrarFestejo();
+    }
+  }
+}
+
+function mostrarFestejo(){
+  if(festejoMostrado) return;
+  festejoMostrado=true;
+  festejo.style.display="flex";
+  setTimeout(()=>{
+    festejo.style.display="none";
+    botonSiguiente.style.display="inline-block";
+  },10000);
+}
+
+palabras.sort(()=>Math.random()-.5);
+inicializarEstrellas();
+cargarPalabra(indiceReal());
+</script>
+
+</body>
+</html>

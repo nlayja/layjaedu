@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Camino de Letras - Página 2</title>
+<style>
+body {
+  margin: 0;
+  font-family: "Poppins", Arial, sans-serif;
+  background: #f7f3ff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Botón cerrar grande */
+#cerrar {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  font-size: 32px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: #ff6f61;
+}
+
+/* Camino de progreso */
+.camino {
+  display: flex;
+  gap: 15px;
+  margin: 20px 0;
+}
+.casilla {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #ccc; /* pendiente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  color: white;
+  position: relative;
+}
+.casilla.completado { background-color: #4CAF50; } /* verde */
+.casilla::after {
+  content: "⭐";
+  position: absolute;
+  font-size: 18px;
+  bottom: -10px;
+  right: -10px;
+}
+
+/* Contenedor de imágenes */
+.contenedor-imagenes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  justify-items: center;
+  margin: 40px auto;
+  max-width: 900px;
+}
+.imagen-con-numero {
+  position: relative;
+}
+.imagen-boton {
+  width: 250px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.imagen-boton:hover { transform: scale(1.05); }
+
+/* Número dentro de burbuja */
+.numero-imagen {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 30px;
+  height: 30px;
+  background: #ccc; /* pendiente */
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: white;
+}
+.numero-imagen.completado { background: #4CAF50; }
+
+/* Botones navegación */
+.botones-navegacion {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 40px;
+  width: 100%;
+}
+.botones-navegacion button {
+  padding: 12px 28px;
+  font-size: 18px;
+  border-radius: 20px;
+  border:none;
+  cursor:pointer;
+  background: linear-gradient(135deg,#ffb347,#ff8c00);
+  color:white;
+  font-weight:bold;
+  transition:0.25s;
+}
+.botones-navegacion button:hover { transform:scale(1.05); background: linear-gradient(135deg,#ffa726,#fb8c00); }
+
+</style>
+</head>
+<body>
+
+<!-- Botón cerrar -->
+<button id="cerrar">✖</button>
+
+<!-- Camino de progreso -->
+<div class="camino">
+  <div class="casilla" id="casilla1">1</div>
+  <div class="casilla" id="casilla2">2</div>
+  <div class="casilla" id="casilla3">3</div>
+  <div class="casilla" id="casilla4">4</div>
+  <div class="casilla" id="casilla5">5</div>
+  <div class="casilla" id="casilla6">6</div>
+</div>
+
+<!-- Imágenes de actividades -->
+<div class="contenedor-imagenes">
+  <div class="imagen-con-numero">
+    <img class="imagen-boton" src="imagenes/bloque3.jpg" alt="Actividad 4" onclick="location.href='bloque3.html'">
+    <div class="numero-imagen" id="num4">4</div>
+  </div>
+  <div class="imagen-con-numero">
+    <img class="imagen-boton" src="imagenes/bloque4.jpg" alt="Actividad 5" onclick="location.href='bloque4.html'">
+    <div class="numero-imagen" id="num5">5</div>
+  </div>
+  <div class="imagen-con-numero">
+    <img class="imagen-boton" src="imagenes/bloque5.jpg" alt="Actividad 6" onclick="location.href='bloque5.html'">
+    <div class="numero-imagen" id="num6">6</div>
+  </div>
+</div>
+
+<!-- Botones navegación -->
+<div class="botones-navegacion">
+  <button onclick="location.href='pagina1.html'">⬅ Anterior</button>
+  <!-- Si habrá otra página después, se puede agregar siguiente -->
+</div>
+
+<script>
+// Botón cerrar vuelve al login
+document.getElementById("cerrar").onclick = () => {
+  localStorage.removeItem("nino");
+  window.location.href = "login.html";
+};
+
+// Progreso visual
+function marcarCompletadas(indices) {
+  indices.forEach(i => {
+    document.getElementById("casilla"+i).classList.add("completado");
+    const num = document.getElementById("num"+i);
+    if(num) num.classList.add("completado");
+  });
+}
+
+// Leer progreso desde localStorage
+let progreso = JSON.parse(localStorage.getItem("progreso")) || [];
+// Al llegar a Página 2, las primeras 3 deben aparecer completadas
+progreso = Array.from(new Set([...progreso,1,2,3]));
+marcarCompletadas(progreso);
+
+</script>
+</body>
+</html>

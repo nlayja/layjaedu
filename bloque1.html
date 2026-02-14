@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Bloque 1 - Aprende Jugando</title>
+
+<style>
+:root{
+  --color-correcto: #28a745;   /* verde bonito y suave */
+  --color-incorrecto: #ff4d4d; /* rojo oficial */
+  --color-base-carta: #ffffff;
+}
+
+body{
+  margin:0;
+  font-family:"Poppins",Arial,sans-serif;
+  background:#f7f3ff;
+  text-align:center;
+}
+
+/* Cerrar */
+#cerrar{
+  position:fixed;
+  top:10px;
+  right:10px;
+  font-size:32px;
+  background:none;
+  border:none;
+  cursor:pointer;
+  color:#ff6f61;
+}
+
+/* Navegación */
+.botones-navegacion{
+  display:flex;
+  justify-content:flex-end;
+  max-width:1200px;
+  margin:20px auto;
+  padding:0 10px;
+}
+
+.botones-navegacion button{
+  padding:12px 28px;
+  font-size:18px;
+  border-radius:20px;
+  border:none;
+  cursor:pointer;
+  background:linear-gradient(135deg,#ffb347,#ff8c00);
+  color:white;
+  font-weight:bold;
+}
+
+.memorama{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:15px;
+  max-width:600px;
+  margin-top:10px;
+}
+
+.carta{
+  width:100px;
+  height:100px;
+  background:#fff;
+  border-radius:15px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:32px; /* un poquito más grande */
+  font-weight: 800; /* más gruesa */
+  cursor:pointer;
+  user-select:none;
+}
+.carta.volteada{
+  background:#8e5cff;
+  color:white;
+}
+
+.carta.activa{
+  color:#333;
+}
+
+/* Estrellas */
+#estrellas{
+  margin:15px 0;
+  min-height:40px;
+}
+
+/* Mensaje */
+#mensajePar{
+  position:fixed;
+  top:20%;
+  left:50%;
+  transform:translateX(40%);
+  background:#ffeb3b;
+  font-size:32px;
+  padding:15px 30px;
+  border-radius:15px;
+  display:none;
+  z-index:10000;
+  align-items:center;
+  gap:10px;
+  font-weight:bold;
+}
+
+/* Festejo */
+#festejo{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+
+/* Imagen que rebota */
+#imagenBloque{
+  width:330px; /* un poquito más grande */
+  transition: transform 0.2s;
+}
+
+/* Barra de avance */
+#audioBarWrapper{
+  width:300px;
+  height:30px;
+  margin:10px auto;
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+
+#audioBar{
+  width:100%;
+  height:10px;
+  background:#ddd;
+  border-radius:5px;
+  overflow:hidden;
+  position:relative;
+}
+
+#audioBarInner{
+  width:0%;
+  height:100%;
+  background:#ffb347;
+}
+
+#audioIcon{
+  font-size:20px;
+}
+
+/* Temblor horizontal (incorrecto) */
+@keyframes temblarHorizontal {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}
+
+/* Rebote para la imagen bloque1.jpg */
+@keyframes saltoFestejo {
+  0%   { transform: translateY(0); }
+  25%  { transform: translateY(-40px); }
+  50%  { transform: translateY(0); }
+  75%  { transform: translateY(-40px); }
+  100% { transform: translateY(0); }
+}
+
+/* Movimiento vertical lineal (correcto) de cartas */
+@keyframes moverVertical {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+</style>
+</head>
+
+<body>
+
+<button id="cerrar">✖</button>
+
+<div style="display:flex;gap:30px;justify-content:flex-start;margin-top:30px;">
+  <img id="imagenBloque" src="imagenes/bloque1.jpg">
+  <div>
+    <div id="estrellas"></div>
+
+    <!-- Barra de audio -->
+    <div id="audioBarWrapper">
+      <div id="audioIcon">🔊</div>
+      <div id="audioBar">
+        <div id="audioBarInner"></div>
+      </div>
+    </div>
+
+    <div class="memorama" id="memorama"></div>
+  </div>
+</div>
+
+<div class="botones-navegacion">
+  <button onclick="location.href='bloque1.1.html'">Siguiente ➡</button>
+</div>
+
+<div id="festejo">
+  <img id="imagenNivelCompleto" src="imagenes/nivel_completo.jpg" width="350">
+</div>
+
+<div id="mensajePar">🎉 <span>¡Muy bien!</span></div>
+
+<script>
+const niveles = [
+ { silabas:[{letra:'MA',audio:'audios/ma.mp3'},{letra:'ME',audio:'audios/me.mp3'}] },
+ { silabas:[{letra:'MI',audio:'audios/mi.mp3'},{letra:'MO',audio:'audios/mo.mp3'}] },
+ { silabas:[{letra:'PA',audio:'audios/pa.mp3'},{letra:'PE',audio:'audios/pe.mp3'}] },
+ { silabas:[{letra:'PI',audio:'audios/pi.mp3'},{letra:'PO',audio:'audios/po.mp3'}] },
+ { silabas:[{letra:'SA',audio:'audios/sa.mp3'},{letra:'SE',audio:'audios/se.mp3'}] }
+];
+
+let turnosRestantes = 0; // nuevo contador de turnos
+const TURNOS_POR_NIVEL = 3; // cantidad fija de turnos por nivel
+
+let nivelActual = parseInt(localStorage.getItem("nivelPendiente")) || 0;
+localStorage.removeItem("nivelPendiente");
+
+let primeraCarta=null;
+let segundaCarta=null;
+let bloqueando=false;
+let pares=0;
+let aciertos=0;
+
+const memorama=document.getElementById("memorama");
+const estrellas=document.getElementById("estrellas");
+const mensaje=document.getElementById("mensajePar");
+const audioBarInner=document.getElementById("audioBarInner");
+const audioIcon=document.getElementById("audioIcon");
+const imagenBloque = document.getElementById("imagenBloque");
+
+function playAudioConBar(audioSrc, callback){
+  const audio = new Audio(audioSrc);
+  audio.play();
+  audioBarInner.style.width="0%";
+  audioIcon.style.left="0%";
+
+  audio.onloadedmetadata = ()=>{
+    const dur = audio.duration;
+    const start = Date.now();
+    const interval = setInterval(()=>{
+      const elapsed = (Date.now()-start)/1000;
+      let progress = Math.min((elapsed/dur)*100,100);
+      audioBarInner.style.width = progress+"%";
+      audioIcon.style.left = progress+"%";
+      if(progress>=100) clearInterval(interval);
+    },50);
+  };
+
+  audio.onended = ()=>{
+    audioBarInner.style.width="0%";
+    audioIcon.style.left="0%";
+    if(callback) callback();
+  };
+  return audio;
+}
+
+function cargarNivel(){
+  turnosRestantes = TURNOS_POR_NIVEL; // 🔥 AQUÍ
+  memorama.innerHTML="";
+  primeraCarta=null;
+  segundaCarta=null;
+  pares=0;
+
+  let cartas=[...niveles[nivelActual].silabas,...niveles[nivelActual].silabas];
+  cartas.sort(()=>Math.random()-0.5);
+
+  cartas.forEach(s=>{
+    const c=document.createElement("div");
+    c.className="carta";
+    c.dataset.letra=s.letra;
+    c.dataset.audio=s.audio;
+    memorama.appendChild(c);
+
+    c.onclick=()=>{
+      if(bloqueando || c.classList.contains("volteada")) return;
+      if(c === primeraCarta) return;
+
+      bloqueando=true;
+      c.classList.add("activa");
+      c.innerText=s.letra;
+
+      if(!primeraCarta){
+        primeraCarta=c;
+        primeraCarta.style.backgroundColor="var(--color-correcto)";
+        playAudioConBar(s.audio, ()=>{ bloqueando=false; });
+        return;
+      }
+
+      segundaCarta=c;
+      const audioS = playAudioConBar(s.audio);
+   turnosRestantes--;
+
+      if(primeraCarta.dataset.letra === segundaCarta.dataset.letra){
+        pares++;
+        aciertos++;
+
+        primeraCarta.style.backgroundColor="var(--color-correcto)";
+        segundaCarta.style.backgroundColor="var(--color-correcto)";
+        primeraCarta.style.animation = `moverVertical ${audioS.duration+2}s linear infinite`;
+        segundaCarta.style.animation = `moverVertical ${audioS.duration+2}s linear infinite`;
+
+        audioS.onended = ()=>{
+          const audioPar = new Audio("audios/par_correcto.mp3");
+
+          // 🌟 Rebote y cambio de imagen mientras dura audioPar
+          audioPar.onloadedmetadata = ()=>{
+            imagenBloque.src = "imagenes/fiesta.jpg";
+            imagenBloque.style.animation = `saltoFestejo ${audioPar.duration}s ease-in-out infinite`;
+          };
+
+          audioPar.play();
+          mensaje.style.display="flex";
+
+          audioPar.onended = ()=>{
+            mensaje.style.display="none";
+            imagenBloque.style.animation = "";
+            imagenBloque.src = "imagenes/bloque1.jpg"; // volver a la original
+
+            primeraCarta.style.visibility="hidden";
+            segundaCarta.style.visibility="hidden";
+            primeraCarta.style.animation="";
+            segundaCarta.style.animation="";
+            primeraCarta=null;
+            segundaCarta=null;
+            bloqueando=false;
+
+            if(turnosRestantes <= 0 || pares === niveles[nivelActual].silabas.length){
+              nivelActual++;
+              if(nivelActual === 1 || nivelActual === 2){
+                localStorage.setItem("nivelPendiente", nivelActual);
+                localStorage.setItem("juegosSilabas", 0);
+                window.location.href="animacion.html";
+                return;
+              }
+              if(nivelActual < niveles.length){
+                cargarNivel();
+} else {
+  const festejo = document.getElementById("festejo");
+  const imgNivel = document.getElementById("imagenNivelCompleto");
+
+  festejo.style.display = "flex";
+
+  // 🎉 Animación tipo festejo
+  imgNivel.style.animation = "saltoFestejo 1.5s ease-in-out infinite";
+
+  // 🔊 Audio de nivel completado
+  const audioFinal = new Audio("audios/par_correcto.mp3");
+  audioFinal.play();
+
+  // ⏳ Mostrar nivel_completo.jpg y luego regresar
+  setTimeout(() => {
+    imgNivel.style.animation = "";   // detener rebote
+    festejo.style.display = "none";
+    window.location.href = "pagina1.html";
+  }, 4000);
+}       
+ }
+          };
+        };
+      } else {
+        primeraCarta.style.backgroundColor="var(--color-incorrecto)";
+        segundaCarta.style.backgroundColor="var(--color-incorrecto)";
+        primeraCarta.style.animation = "temblarHorizontal 2s infinite";
+        segundaCarta.style.animation = "temblarHorizontal 2s infinite";
+
+        audioS.onended = ()=>{
+          primeraCarta.classList.remove("volteada");
+          segundaCarta.classList.remove("volteada");
+          primeraCarta.textContent="";
+          segundaCarta.textContent="";
+          primeraCarta.style.backgroundColor="var(--color-base-carta)";
+          segundaCarta.style.backgroundColor="var(--color-base-carta)";
+          primeraCarta.style.animation="";
+          segundaCarta.style.animation="";
+          primeraCarta=null;
+          segundaCarta=null;
+          bloqueando=false;
+        };
+      }
+    };
+  });
+}
+
+document.getElementById("cerrar").onclick=()=>{ window.location.href="login.html"; };
+
+cargarNivel();
+</script>
+</body>
+</html>

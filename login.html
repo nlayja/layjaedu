@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Aprende Jugando</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="card card-login">
+
+    <!-- LADO IZQUIERDO -->
+    <div class="lado-imagen">
+      <div class="contenido-imagen">
+        <h1>Maestra Nohemi Layja</h1>
+        <h2>🌟 Aprende Jugando 🌟</h2>
+        <p class="subtitulo">Selecciona tu nombre para comenzar</p>
+
+        <!-- Contenedor de botones -->
+        <div class="botones-alumnos" id="botonesAlumnos"></div>
+
+        <!-- Botón para cambiar de alumno -->
+        <button id="cambiarAlumno" style="margin-top:20px; padding:10px 20px; display:none;">
+          Cambiar alumno
+        </button>
+
+      </div>
+    </div>
+
+    <div class="lado-formulario"></div>
+
+  </div>
+
+<script>
+// --- SOLO 2 ALUMNOS ---
+const alumnos = ["Alumno 1", "Alumno 2"];
+
+const contenedor = document.getElementById("botonesAlumnos");
+const cambiarBtn = document.getElementById("cambiarAlumno");
+
+// Mostrar botones
+function mostrarBotones() {
+  contenedor.style.display = "flex";
+  cambiarBtn.style.display = "none";
+}
+
+// Generar botones
+alumnos.forEach(nombre => {
+  const boton = document.createElement("button");
+  boton.textContent = nombre;
+  boton.onclick = () => {
+    localStorage.setItem("nino", nombre);
+    window.location.href = "pagina1.html";
+  };
+  contenedor.appendChild(boton);
+});
+
+// Al cargar
+window.onload = () => {
+  const nombreGuardado = localStorage.getItem("nino");
+  if(nombreGuardado) {
+    contenedor.style.display = "none";
+    cambiarBtn.style.display = "inline-block";
+  } else {
+    mostrarBotones();
+  }
+};
+
+// Cambiar alumno
+cambiarBtn.onclick = () => {
+  localStorage.removeItem("nino");
+  mostrarBotones();
+};
+</script>
+
+</body>
+</html>
