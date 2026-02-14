@@ -127,7 +127,7 @@ h2{
 
 <div class="contenedor-bloque">
   <div class="contenedor-imagen">
-    <img src="imagenes/bloque1.jpg">
+    <img src="https://raw.githubusercontent.com/nlayja/layjaedu/main/bloque1.jpg">
   </div>
 
   <div class="contenedor-dinamica">
@@ -148,7 +148,7 @@ h2{
 </div>
 
 <div id="festejo">
-  <img src="imagenes/festejo con niños2.jpg" width="350">
+  <img src="https://raw.githubusercontent.com/nlayja/layjaedu/main/festejo%20con%20niños2.jpg" width="350">
 </div>
 
 <script>
@@ -188,9 +188,9 @@ const audiosSilabas = {};
 const audiosPalabras = {};
 palabras.forEach(p=>{
   p.silabas.forEach(s=>{
-    if(!audiosSilabas[s]) audiosSilabas[s]=new Audio("audios/"+s+".mp3");
+    if(!audiosSilabas[s]) audiosSilabas[s]=new Audio("https://raw.githubusercontent.com/nlayja/layjaedu/main/"+s+".mp3");
   });
-  if(!audiosPalabras[p.palabra]) audiosPalabras[p.palabra]=new Audio("audios/"+p.palabra+".mp3");
+  if(!audiosPalabras[p.palabra]) audiosPalabras[p.palabra]=new Audio("https://raw.githubusercontent.com/nlayja/layjaedu/main/"+p.palabra+".mp3");
 });
 
 function inicializarEstrellas(){
@@ -316,3 +316,4 @@ cargarPalabra(indiceReal());
 
 </body>
 </html>
+
