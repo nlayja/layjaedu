@@ -183,7 +183,7 @@ body{
 <button id="cerrar">✖</button>
 
 <div style="display:flex;gap:30px;justify-content:flex-start;margin-top:30px;">
-  <img id="imagenBloque" src="imagenes/bloque1.jpg">
+  <img id="imagenBloque" src="https://raw.githubusercontent.com/nlayja/layjaedu/main/bloque1.jpg">
   <div>
     <div id="estrellas"></div>
 
@@ -204,18 +204,18 @@ body{
 </div>
 
 <div id="festejo">
-  <img id="imagenNivelCompleto" src="imagenes/nivel_completo.jpg" width="350">
+  <img id="imagenNivelCompleto" src="https://raw.githubusercontent.com/nlayja/layjaedu/main/nivel_completo.jpg" width="350">
 </div>
 
 <div id="mensajePar">🎉 <span>¡Muy bien!</span></div>
 
 <script>
 const niveles = [
- { silabas:[{letra:'MA',audio:'audios/ma.mp3'},{letra:'ME',audio:'audios/me.mp3'}] },
- { silabas:[{letra:'MI',audio:'audios/mi.mp3'},{letra:'MO',audio:'audios/mo.mp3'}] },
- { silabas:[{letra:'PA',audio:'audios/pa.mp3'},{letra:'PE',audio:'audios/pe.mp3'}] },
- { silabas:[{letra:'PI',audio:'audios/pi.mp3'},{letra:'PO',audio:'audios/po.mp3'}] },
- { silabas:[{letra:'SA',audio:'audios/sa.mp3'},{letra:'SE',audio:'audios/se.mp3'}] }
+ { silabas:[{letra:'MA',audio:'https://raw.githubusercontent.com/nlayja/layjaedu/main/ma.mp3'},{letra:'ME',audio:'https://raw.githubusercontent.com/nlayja/layjaedu/main/me.mp3'}] },
+ { silabas:[{letra:'MI',audio:'https://raw.githubusercontent.com/nlayja/layjaedu/main/mi.mp3'},{letra:'MO',audio:'https://raw.githubusercontent.com/nlayja/layjaedu/main/mo.mp3'}] },
+ { silabas:[{letra:'PA',audio:'https://raw.githubusercontent.com/nlayja/layjaedu/main/pa.mp3'},{letra:'PE',audio:'https://raw.githubusercontent.com/nlayja/layjaedu/main/pe.mp3'}] },
+ { silabas:[{letra:'PI',audio:'https://raw.githubusercontent.com/nlayja/layjaedu/main/pi.mp3'},{letra:'PO',audio:'https://raw.githubusercontent.com/nlayja/layjaedu/main/po.mp3'}] },
+ { silabas:[{letra:'SA',audio:'https://raw.githubusercontent.com/nlayja/layjaedu/main/sa.mp3'},{letra:'SE',audio:'https://raw.githubusercontent.com/nlayja/layjaedu/main/se.mp3'}] }
 ];
 
 let turnosRestantes = 0; // nuevo contador de turnos
@@ -309,11 +309,11 @@ function cargarNivel(){
         segundaCarta.style.animation = `moverVertical ${audioS.duration+2}s linear infinite`;
 
         audioS.onended = ()=>{
-          const audioPar = new Audio("audios/par_correcto.mp3");
+          const audioPar = new Audio("https://raw.githubusercontent.com/nlayja/layjaedu/main/par_correcto.mp3");
 
           // 🌟 Rebote y cambio de imagen mientras dura audioPar
           audioPar.onloadedmetadata = ()=>{
-            imagenBloque.src = "imagenes/fiesta.jpg";
+            imagenBloque.src = "https://raw.githubusercontent.com/nlayja/layjaedu/main/fiesta.jpg";
             imagenBloque.style.animation = `saltoFestejo ${audioPar.duration}s ease-in-out infinite`;
           };
 
@@ -323,7 +323,7 @@ function cargarNivel(){
           audioPar.onended = ()=>{
             mensaje.style.display="none";
             imagenBloque.style.animation = "";
-            imagenBloque.src = "imagenes/bloque1.jpg"; // volver a la original
+            imagenBloque.src = "https://raw.githubusercontent.com/nlayja/layjaedu/main/bloque1.jpg"; // volver a la original
 
             primeraCarta.style.visibility="hidden";
             segundaCarta.style.visibility="hidden";
@@ -396,3 +396,4 @@ cargarNivel();
 </script>
 </body>
 </html>
+
