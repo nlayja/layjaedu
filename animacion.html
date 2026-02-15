@@ -143,7 +143,7 @@ body{
 <div id="contador">⭐ Aciertos: 0 / 5</div>
 
 <div id="escena">
-  <img src="imagenes/maestra_Nohemi.png" id="personaje">
+  <img src="https://raw.githubusercontent.com/nlayja/layjaedu/main/maestra_Nohemi.png" id="personaje">
   <div id="festejo">🎉 ¡Muy bien! 🎉</div>
 </div>
 
@@ -162,8 +162,8 @@ let puedeSeleccionar=true;
 let reproduciendoAcierto=false;
 
 const audio = new Audio();
-const audioCorrecto = new Audio("audios/par_correcto.mp3");
-const audioError = new Audio("audios/error.mp3");
+const audioCorrecto = new Audio("https://raw.githubusercontent.com/nlayja/layjaedu/main/par_correcto.mp3");
+const audioError = new Audio("https://raw.githubusercontent.com/nlayja/layjaedu/main/error.mp3");
 
 function elegirSilaba(){
   do{
@@ -208,7 +208,7 @@ function reproducirSilaba(){
   const barra=document.getElementById("barraProgreso");
   barra.style.width="0%";
 
-  audio.src="audios/"+silabaActual+".mp3";
+  audio.src="https://raw.githubusercontent.com/nlayja/layjaedu/main/"+silabaActual+".mp3";
   audio.currentTime=0;
   audio.play();
 
@@ -294,3 +294,4 @@ window.onload=()=>{
 
 </body>
 </html>
+
