@@ -223,11 +223,17 @@ function contarCuento() {
     </div>
   `;
 }
-
 function iniciarJuego() {
   limpiarContenido();
   decir("¡A jugar!");
-document.getElementById('contenido').innerHTML = `<iframe src="pacman.html" width="100%" height="500px" style="border:none;"></iframe>`;
+  document.getElementById('contenido').innerHTML = `
+    <iframe 
+      src="https://tuUsuario.github.io/vocales-educativos/pacman.html" 
+      width="100%" 
+      height="500px" 
+      style="border:none;">
+    </iframe>
+  `;
 }
 
 function comenzarReloj() {
@@ -260,5 +266,6 @@ window.onload = comenzarReloj;
 </body>
 
 </html>
+
 
 
