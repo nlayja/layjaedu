@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Juego Intuitivo - Versión Móvil y PC</title>
+<title>Juego Intuitivo - Móvil y PC</title>
 <style>
 body {
   margin: 0;
@@ -25,7 +25,7 @@ body {
   position: relative;
   width: 100%;
   max-width: 960px;
-  aspect-ratio: 8 / 3; /* Mantiene 8 columnas x 3 filas proporción */
+  aspect-ratio: 8 / 3; /* Mantiene proporción 8x3 */
   background: #111;
   display: grid;
   grid-template-columns: repeat(8, 1fr);
@@ -153,8 +153,10 @@ function actualizarContador(){
   contador.textContent = `🍪 ${conteoComido['🍪']}   🎂 ${conteoComido['🎂']}   🍬 ${conteoComido['🍬']}`;
 }
 
+// --- Pacman ---
 const pacman = document.createElement('img');
-pacman.src = 'https://raw.githubusercontent.com/nlayja/layjaedu/main/perfil40derecha.jpg';
+const baseURL = 'https://nlayja.github.io/layjaedu/'; // GitHub Pages URL
+pacman.src = baseURL + 'perfil40derecha.jpg';
 pacman.id = 'pacman';
 juego.appendChild(pacman);
 
@@ -189,15 +191,14 @@ function victoria() {
   setTimeout(() => location.reload(), 6000);
 }
 
-// --- Controles con teclado ---
+// --- Movimiento Pacman ---
 window.addEventListener('keydown', e => {
   moverPacman(e.key);
 });
 
-// --- Controles táctiles para celular y tablet ---
+// --- Swipe para móvil/tablet ---
 let touchStartX = 0;
 let touchStartY = 0;
-
 window.addEventListener('touchstart', e => {
   touchStartX = e.touches[0].clientX;
   touchStartY = e.touches[0].clientY;
@@ -230,10 +231,10 @@ function moverPacman(key){
     pacX = nx;
     pacY = ny;
 
-    if(direccion==='right') pacman.src = 'https://raw.githubusercontent.com/nlayja/layjaedu/main/perfil40derecha.jpg';
-    if(direccion==='left')  pacman.src = 'https://raw.githubusercontent.com/nlayja/layjaedu/main/perfil40izquierda.jpg';
-    if(direccion==='up')    pacman.src = 'https://raw.githubusercontent.com/nlayja/layjaedu/main/perfil40espaldas.jpg';
-    if(direccion==='down')  pacman.src = 'https://raw.githubusercontent.com/nlayja/layjaedu/main/perfil40agacha.jpg';
+    if(direccion==='right') pacman.src = baseURL + 'perfil40derecha.jpg';
+    if(direccion==='left')  pacman.src = baseURL + 'perfil40izquierda.jpg';
+    if(direccion==='up')    pacman.src = baseURL + 'perfil40espaldas.jpg';
+    if(direccion==='down')  pacman.src = baseURL + 'perfil40agacha.jpg';
 
     actualizarPacman();
 
