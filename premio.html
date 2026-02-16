@@ -227,7 +227,7 @@ function contarCuento() {
 function iniciarJuego() {
   limpiarContenido();
   decir("¡A jugar!");
-  document.getElementById('contenido').innerHTML = `<iframe src="pacman.html"></iframe>`;
+  document.getElementById('contenido').innerHTML = `<iframe src="location.href='pacman.html'"></iframe>`;
 }
 
 function comenzarReloj() {
@@ -258,4 +258,5 @@ function finalizar() {
 window.onload = comenzarReloj;
 </script>
 </body>
+
 </html>
