@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Juego Intuitivo - PC y Móvil</title>
+<title>Pacman Emoji - PC y Móvil</title>
 <style>
 body {
   margin: 0;
@@ -24,7 +24,7 @@ body {
   position: relative;
   width: 100%;
   max-width: 960px;
-  aspect-ratio: 8 / 3;
+  aspect-ratio: 8 / 3; /* 8 columnas x 3 filas */
   background: #111;
   display: grid;
   grid-template-columns: repeat(8, 1fr);
@@ -50,6 +50,7 @@ body {
   position: absolute;
   z-index: 10;
   pointer-events: none;
+  font-size: 80px;
   transition: left 0.1s linear, top 0.1s linear;
 }
 
@@ -100,7 +101,6 @@ body {
 </div>
 
 <script>
-const baseURL = 'https://nlayja.github.io/layjaedu/'; // Cambia si tu GitHub Pages es diferente
 const juego = document.getElementById('juego');
 const relleno = document.getElementById('relleno');
 const contador = document.getElementById('contador');
@@ -116,18 +116,6 @@ let totalComida = 0;
 const tiposComida = ['🍪','🎂','🍬'];
 const conteoComido = {'🍪':0,'🎂':0,'🍬':0};
 
-function decir(texto) {
-  window.speechSynthesis.cancel();
-  const mensaje = new SpeechSynthesisUtterance(texto);
-  mensaje.lang = 'es-MX';
-  window.speechSynthesis.speak(mensaje);
-}
-
-// Saludo inicial
-window.addEventListener('click', () => {
-  decir("¡Hola! Ayúdame a recolectar todos los dulces.");
-}, { once: true });
-
 // Crear tablero
 for(let y=0; y<filas; y++){
   laberinto[y] = [];
@@ -136,7 +124,7 @@ for(let y=0; y<filas; y++){
     celda.classList.add('celda');
     juego.appendChild(celda);
 
-    if(x === 0 && y === 0){
+    if(x===0 && y===0){
       laberinto[y][x] = 0;
       celda.innerHTML = '';
     } else {
@@ -153,19 +141,11 @@ function actualizarContador(){
   contador.textContent = `🍪 ${conteoComido['🍪']}   🎂 ${conteoComido['🎂']}   🍬 ${conteoComido['🍬']}`;
 }
 
-// Crear Pacman
-const pacman = document.createElement('img');
-pacman.src = baseURL + 'perfil40derecha.jpg';
+// Crear Pacman emoji
+const pacman = document.createElement('div');
 pacman.id = 'pacman';
+pacman.textContent = '😋'; // dirección inicial
 juego.appendChild(pacman);
-
-pacman.onload = () => {
-  const maxSize = 110;
-  const ratio = pacman.naturalWidth / pacman.naturalHeight;
-  pacman.height = maxSize;
-  pacman.width = maxSize * ratio;
-  actualizarPacman();
-}
 
 function actualizarPacman(){
   const cellWidth = juego.clientWidth / columnas;
@@ -178,71 +158,38 @@ function actualizarBarra(){
   const restantes = document.querySelectorAll('.comida').length;
   const porcentaje = (restantes / totalComida) * 100;
   relleno.style.width = porcentaje + '%';
-
-  if(restantes === 0) victoria();
+  if(restantes===0) victoria();
 }
 
 function victoria() {
-  decir("¡Felicidades! ¡Eres un campeón!");
-  cartel.style.display = 'block';
-  setTimeout(() => location.reload(), 6000);
+  cartel.style.display='block';
+  setTimeout(()=>location.reload(),6000);
 }
 
-// --- Controles teclado ---
-window.addEventListener('keydown', e => { moverPacman(e.key); });
-
-// --- Controles táctiles ---
-let touchStartX = 0;
-let touchStartY = 0;
-
-window.addEventListener('touchstart', e => {
-  touchStartX = e.touches[0].clientX;
-  touchStartY = e.touches[0].clientY;
-}, {passive:true});
-
-window.addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - touchStartX;
-  const dy = e.changedTouches[0].clientY - touchStartY;
-
-  if(Math.abs(dx) > Math.abs(dy)){
-    if(dx > 0) moverPacman('ArrowRight');
-    else moverPacman('ArrowLeft');
-  } else {
-    if(dy > 0) moverPacman('ArrowDown');
-    else moverPacman('ArrowUp');
-  }
-}, {passive:true});
-
-// Función de movimiento
+// --- Movimiento ---
 function moverPacman(key){
   let nx = pacX;
   let ny = pacY;
   let direccion = '';
 
-  if(key==='ArrowRight'){ nx++; direccion='right'; }
-  if(key==='ArrowLeft'){ nx--; direccion='left'; }
-  if(key==='ArrowUp'){ ny--; direccion='up'; }
-  if(key==='ArrowDown'){ ny++; direccion='down'; }
+  if(key==='ArrowRight'){ nx++; direccion='→'; pacman.textContent='😋'; }
+  if(key==='ArrowLeft'){ nx--; direccion='←'; pacman.textContent='😋'; }
+  if(key==='ArrowUp'){ ny--; direccion='↑'; pacman.textContent='😋'; }
+  if(key==='ArrowDown'){ ny++; direccion='↓'; pacman.textContent='😋'; }
 
   if(nx>=0 && nx<columnas && ny>=0 && ny<filas){
-    pacX = nx;
-    pacY = ny;
-
-    if(direccion==='right') pacman.src = baseURL + 'perfil40derecha.jpg';
-    if(direccion==='left')  pacman.src = baseURL + 'perfil40izquierda.jpg';
-    if(direccion==='up')    pacman.src = baseURL + 'perfil40espaldas.jpg';
-    if(direccion==='down')  pacman.src = baseURL + 'perfil40agacha.jpg';
-
+    pacX=nx;
+    pacY=ny;
     actualizarPacman();
 
-    if(laberinto[ny][nx] !== 0){
+    if(laberinto[ny][nx]!==0){
       const tipo = laberinto[ny][nx];
-      laberinto[ny][nx] = 0;
-      const index = ny*columnas + nx;
-      const celda = juego.children[index];
+      laberinto[ny][nx]=0;
+      const index=ny*columnas + nx;
+      const celda=juego.children[index];
 
       celda.classList.add('comida-comida');
-      setTimeout(()=> celda.innerHTML='', 300);
+      setTimeout(()=>celda.innerHTML='',300);
       celda.classList.remove('comida');
 
       conteoComido[tipo]++;
@@ -251,6 +198,33 @@ function moverPacman(key){
     }
   }
 }
+
+// --- Controles teclado ---
+window.addEventListener('keydown', e=> moverPacman(e.key));
+
+// --- Controles táctiles ---
+let touchStartX=0, touchStartY=0;
+window.addEventListener('touchstart', e=>{
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+},{passive:true});
+
+window.addEventListener('touchend', e=>{
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+
+  if(Math.abs(dx) > Math.abs(dy)){
+    if(dx>0) moverPacman('ArrowRight');
+    else moverPacman('ArrowLeft');
+  } else {
+    if(dy>0) moverPacman('ArrowDown');
+    else moverPacman('ArrowUp');
+  }
+},{passive:true});
+
+// Mensaje inicial
+window.addEventListener('click',()=>alert("¡Hola! Recolecta todos los dulces."));
+
 </script>
 </body>
 </html>
