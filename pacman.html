@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Juego Intuitivo - Versión Táctil</title>
+<title>Juego Intuitivo - Versión Móvil y PC</title>
 <style>
 body {
   margin: 0;
@@ -11,36 +11,34 @@ body {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  height: 100vh;
   font-family: sans-serif;
   overflow: hidden;
 }
 
 #contador {
   margin: 10px;
-  font-size: 36px;
+  font-size: 24px;
   color: white;
 }
 
 #juego {
   position: relative;
-  width: 960px;  
-  height: 360px;  
+  width: 100%;
+  max-width: 960px;
+  aspect-ratio: 8 / 3; /* Mantiene 8 columnas x 3 filas proporción */
   background: #111;
   display: grid;
-  grid-template-columns: repeat(8, 120px);
-  grid-template-rows: repeat(3, 120px);
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   border: 5px solid #333;
 }
 
 .celda {
-  width: 120px;
-  height: 120px;
   display: flex;
   justify-content: center;
   align-items: center;
+  font-size: 50px; 
   position: relative;
-  font-size: 90px; 
 }
 
 .comida-comida {
@@ -57,13 +55,15 @@ body {
 }
 
 #barra-progreso {
-  width: 960px;
-  height: 30px;
+  width: 100%;
+  max-width: 960px;
+  height: 20px;
   background: #333;
   border-radius: 15px;
   margin-top: 15px;
   border: 2px solid white;
 }
+
 #relleno {
   height: 100%;
   width: 100%;
@@ -78,35 +78,13 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   background: white;
-  padding: 40px;
+  padding: 30px;
   border-radius: 30px;
   text-align: center;
   z-index: 100;
   border: 10px solid #FFD700;
   display: none;
   box-shadow: 0 0 50px rgba(255,215,0,0.5);
-}
-
-#controles {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-#controles button {
-  font-size: 40px;
-  padding: 15px 25px;
-  margin: 5px;
-  border-radius: 15px;
-  border: none;
-  background: #ffb347;
-  color: white;
-  cursor: pointer;
-}
-#controles button:active { transform: scale(0.9); }
-#controles-row {
-  display: flex;
-  justify-content: center;
 }
 </style>
 </head>
@@ -117,19 +95,9 @@ body {
 <div id="barra-progreso"><div id="relleno"></div></div>
 
 <div id="cartel-victoria">
-  <h1 style="font-size: 80px; margin: 0;">🌟 🏆 🌟</h1>
-  <p style="font-size: 40px; margin: 10px; font-weight: bold; color: #333;">¡LO LOGRASTE!</p>
-  <p style="font-size: 60px; margin: 0;">🎈 🍦 🎈</p>
-</div>
-
-<!-- Controles táctiles -->
-<div id="controles">
-  <button onclick="mover('up')">⬆️</button>
-  <div id="controles-row">
-    <button onclick="mover('left')">⬅️</button>
-    <button onclick="mover('down')">⬇️</button>
-    <button onclick="mover('right')">➡️</button>
-  </div>
+  <h1 style="font-size: 60px; margin: 0;">🌟 🏆 🌟</h1>
+  <p style="font-size: 28px; margin: 10px; font-weight: bold; color: #333;">¡LO LOGRASTE!</p>
+  <p style="font-size: 40px; margin: 0;">🎈 🍦 🎈</p>
 </div>
 
 <script>
@@ -142,6 +110,7 @@ let pacX = 0;
 let pacY = 0;
 const filas = 3;
 const columnas = 8;
+
 const laberinto = [];
 let totalComida = 0;
 const tiposComida = ['🍪','🎂','🍬'];
@@ -154,6 +123,7 @@ function decir(texto) {
   window.speechSynthesis.speak(mensaje);
 }
 
+// Saludo inicial
 window.addEventListener('click', () => {
   decir("¡Hola! Ayúdame a recolectar todos los dulces.");
 }, { once: true });
@@ -184,7 +154,7 @@ function actualizarContador(){
 }
 
 const pacman = document.createElement('img');
-pacman.src = 'https://raw.githubusercontent.com/nlayja/layjaedu/main/perfil40derecha.jpg'; 
+pacman.src = 'https://raw.githubusercontent.com/nlayja/layjaedu/main/perfil40derecha.jpg';
 pacman.id = 'pacman';
 juego.appendChild(pacman);
 
@@ -197,43 +167,64 @@ pacman.onload = () => {
 }
 
 function actualizarPacman(){
-  pacman.style.left = (pacX*120 + 5) + 'px';
-  pacman.style.top = (pacY*120 + 5) + 'px';
+  const cellWidth = juego.clientWidth / columnas;
+  const cellHeight = juego.clientHeight / filas;
+  pacman.style.left = (pacX*cellWidth + 5) + 'px';
+  pacman.style.top = (pacY*cellHeight + 5) + 'px';
 }
 
 function actualizarBarra(){
   const restantes = document.querySelectorAll('.comida').length;
   const porcentaje = (restantes / totalComida) * 100;
   relleno.style.width = porcentaje + '%';
-  if(restantes === 0) victoria();
+
+  if(restantes === 0) {
+    victoria();
+  }
 }
 
 function victoria() {
   decir("¡Felicidades! ¡Eres un campeón!");
   cartel.style.display = 'block';
-  setTimeout(() => { location.reload(); }, 6000);
+  setTimeout(() => location.reload(), 6000);
 }
 
-// Manejar movimiento
-function mover(direccion){
-  let e = {key:''};
-  e.key = direccion==='up'?'ArrowUp':
-          direccion==='down'?'ArrowDown':
-          direccion==='left'?'ArrowLeft':
-          direccion==='right'?'ArrowRight':'';
-  procesarMovimiento(e);
-}
+// --- Controles con teclado ---
+window.addEventListener('keydown', e => {
+  moverPacman(e.key);
+});
 
-// Función central de movimiento (llamable desde teclado o botones)
-function procesarMovimiento(e){
+// --- Controles táctiles para celular y tablet ---
+let touchStartX = 0;
+let touchStartY = 0;
+
+window.addEventListener('touchstart', e => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, {passive:true});
+
+window.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+
+  if(Math.abs(dx) > Math.abs(dy)){
+    if(dx > 0) moverPacman('ArrowRight');
+    else moverPacman('ArrowLeft');
+  } else {
+    if(dy > 0) moverPacman('ArrowDown');
+    else moverPacman('ArrowUp');
+  }
+}, {passive:true});
+
+function moverPacman(key){
   let nx = pacX;
   let ny = pacY;
   let direccion = '';
 
-  if(e.key==='ArrowRight'){ nx++; direccion='right'; }
-  if(e.key==='ArrowLeft'){ nx--; direccion='left'; }
-  if(e.key==='ArrowUp'){ ny--; direccion='up'; }
-  if(e.key==='ArrowDown'){ ny++; direccion='down'; }
+  if(key==='ArrowRight'){ nx++; direccion='right'; }
+  if(key==='ArrowLeft'){ nx--; direccion='left'; }
+  if(key==='ArrowUp'){ ny--; direccion='up'; }
+  if(key==='ArrowDown'){ ny++; direccion='down'; }
 
   if(nx>=0 && nx<columnas && ny>=0 && ny<filas){
     pacX = nx;
@@ -251,6 +242,7 @@ function procesarMovimiento(e){
       laberinto[ny][nx] = 0;
       const index = ny*columnas + nx;
       const celda = juego.children[index];
+      
       celda.classList.add('comida-comida');
       setTimeout(()=> celda.innerHTML='', 300);
       celda.classList.remove('comida');
@@ -261,9 +253,6 @@ function procesarMovimiento(e){
     }
   }
 }
-
-// Evento teclado
-window.addEventListener('keydown', procesarMovimiento);
 </script>
 </body>
 </html>
