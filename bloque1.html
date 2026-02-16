@@ -390,11 +390,16 @@ function cargarNivel(){
   });
 }
 
-document.getElementById("cerrar").onclick=()=>{ window.location.href="pagina1.html"; };
+// Ahora
+document.getElementById("cerrar").onclick = () => {
+  localStorage.removeItem("nino");
+  window.location.href = "pagina1.html";
+};
 
 cargarNivel();
 </script>
 </body>
 </html>
+
 
 
