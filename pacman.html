@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Super Maestra - Juego</title>
+<title>Pacman Maestra Superhéroe</title>
 <style>
 body {
   margin: 0;
@@ -11,6 +11,7 @@ body {
   flex-direction: column;
   align-items: center;
   font-family: sans-serif;
+  overflow: hidden;
 }
 
 #contador {
@@ -24,11 +25,11 @@ body {
   width: 100%;
   max-width: 960px;
   aspect-ratio: 8 / 3;
+  background: #111;
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(3, 1fr);
   border: 5px solid #333;
-  background: #111;
 }
 
 .celda {
@@ -36,15 +37,20 @@ body {
   justify-content: center;
   align-items: center;
   font-size: 50px;
+  position: relative;
+}
+
+.comida-comida {
+  transform: scale(2);
+  opacity: 0;
+  transition: transform 0.4s ease, opacity 0.4s ease;
 }
 
 #pacman {
   position: absolute;
   z-index: 10;
   pointer-events: none;
-  width: 100px;
-  height: 100px;
-  transition: left 0.1s, top 0.1s;
+  transition: left 0.1s linear, top 0.1s linear;
 }
 
 #barra-progreso {
@@ -52,17 +58,17 @@ body {
   max-width: 960px;
   height: 20px;
   background: #333;
-  border-radius: 12px;
-  margin-top: 10px;
+  border-radius: 15px;
+  margin-top: 15px;
   border: 2px solid white;
 }
 
 #relleno {
   height: 100%;
   width: 100%;
-  background: gold;
+  background: linear-gradient(to right, #ffcf00, #ffea00);
   border-radius: 12px;
-  transition: width 0.3s;
+  transition: width 0.3s ease;
 }
 
 #cartel-victoria {
@@ -74,136 +80,176 @@ body {
   padding: 30px;
   border-radius: 30px;
   text-align: center;
+  z-index: 100;
+  border: 10px solid #FFD700;
   display: none;
+  box-shadow: 0 0 50px rgba(255,215,0,0.5);
 }
 </style>
 </head>
 <body>
 
-<div id="contador">🍪 0 🎂 0 🍬 0</div>
+<div id="contador">🍪 0  🎂 0  🍬 0</div>
 <div id="juego"></div>
 <div id="barra-progreso"><div id="relleno"></div></div>
 
 <div id="cartel-victoria">
-  <h1>🎉 ¡LO LOGRASTE! 🎉</h1>
+  <h1 style="font-size: 60px; margin: 0;">🌟 🏆 🌟</h1>
+  <p style="font-size: 28px; margin: 10px; font-weight: bold; color: #333;">¡LO LOGRASTE!</p>
+  <p style="font-size: 40px; margin: 0;">🎈 🍦 🎈</p>
 </div>
 
 <script>
+const baseURL = 'https://raw.githubusercontent.com/nlayja/layjaedu/main/';
 const juego = document.getElementById('juego');
 const relleno = document.getElementById('relleno');
 const contador = document.getElementById('contador');
 const cartel = document.getElementById('cartel-victoria');
 
-let pacX=0, pacY=0;
-const filas=3, columnas=8;
+let pacX = 0;
+let pacY = 0;
+const filas = 3;
+const columnas = 8;
 
-const laberinto=[];
-let totalComida=0;
-const tiposComida=['🍪','🎂','🍬'];
-const conteoComido={'🍪':0,'🎂':0,'🍬':0};
+const laberinto = [];
+let totalComida = 0;
+const tiposComida = ['🍪','🎂','🍬'];
+const conteoComido = {'🍪':0,'🎂':0,'🍬':0};
 
-// Tablero
-for(let y=0;y<filas;y++){
-  laberinto[y]=[];
-  for(let x=0;x<columnas;x++){
-    const celda=document.createElement('div');
+function decir(texto) {
+  window.speechSynthesis.cancel();
+  const mensaje = new SpeechSynthesisUtterance(texto);
+  mensaje.lang = 'es-MX';
+  window.speechSynthesis.speak(mensaje);
+}
+
+// Saludo inicial
+window.addEventListener('click', () => {
+  decir("¡Hola! Ayúdame a recolectar todos los dulces.");
+}, { once: true });
+
+// Crear tablero
+for(let y=0; y<filas; y++){
+  laberinto[y] = [];
+  for(let x=0; x<columnas; x++){
+    const celda = document.createElement('div');
     celda.classList.add('celda');
     juego.appendChild(celda);
 
-    if(x===0 && y===0){ laberinto[y][x]=0; celda.innerHTML=''; }
-    else{
-      const comida=tiposComida[Math.floor(Math.random()*tiposComida.length)];
-      celda.innerHTML=comida;
+    if(x === 0 && y === 0){
+      laberinto[y][x] = 0;
+      celda.innerHTML = '';
+    } else {
+      const comida = tiposComida[Math.floor(Math.random()*tiposComida.length)];
+      celda.innerHTML = comida;
       celda.classList.add('comida');
-      laberinto[y][x]=comida;
+      laberinto[y][x] = comida;
       totalComida++;
     }
   }
 }
 
-// Crear super maestra
-const pacman=document.createElement('img');
-pacman.id='pacman';
-// -----------------------------
-// AQUI PON TU IMAGEN DE MAESTRA CON CAPA
-pacman.src='https://raw.githubusercontent.com/nlayja/layjaedu/main/perfil40derecha.jpg';
-pacman.alt='Super Maestra';
-juego.appendChild(pacman);
-
-function actualizarPacman(){
-  const cellWidth=juego.clientWidth/columnas;
-  const cellHeight=juego.clientHeight/filas;
-  pacman.style.left=(pacX*cellWidth)+'px';
-  pacman.style.top=(pacY*cellHeight)+'px';
+function actualizarContador(){
+  contador.textContent = `🍪 ${conteoComido['🍪']}   🎂 ${conteoComido['🎂']}   🍬 ${conteoComido['🍬']}`;
 }
 
-function actualizarContador(){
-  contador.textContent=`🍪 ${conteoComido['🍪']} 🎂 ${conteoComido['🎂']} 🍬 ${conteoComido['🍬']}`;
+// Crear Pacman con imagen de la maestra superhéroe
+const pacman = document.createElement('img');
+pacman.src = baseURL + 'perfil40derecha.jpg'; // Imagen maestra capa
+pacman.id = 'pacman';
+juego.appendChild(pacman);
+
+pacman.onload = () => {
+  const maxSize = 110;
+  const ratio = pacman.naturalWidth / pacman.naturalHeight;
+  pacman.height = maxSize;
+  pacman.width = maxSize * ratio;
+  actualizarPacman();
+}
+
+function actualizarPacman(){
+  const cellWidth = juego.clientWidth / columnas;
+  const cellHeight = juego.clientHeight / filas;
+  pacman.style.left = (pacX*cellWidth + 5) + 'px';
+  pacman.style.top = (pacY*cellHeight + 5) + 'px';
 }
 
 function actualizarBarra(){
-  const restantes=document.querySelectorAll('.comida').length;
-  relleno.style.width=((restantes/totalComida)*100)+'%';
-  if(restantes===0){ cartel.style.display='block'; }
+  const restantes = document.querySelectorAll('.comida').length;
+  const porcentaje = (restantes / totalComida) * 100;
+  relleno.style.width = porcentaje + '%';
+  if(restantes === 0) victoria();
 }
 
-// Movimiento
-function moverPacman(key){
-  let nx=pacX, ny=pacY;
-  let dir='';
+function victoria() {
+  decir("¡Felicidades! ¡Eres un campeón!");
+  cartel.style.display = 'block';
+  setTimeout(() => location.reload(), 6000);
+}
 
-  if(key==='ArrowRight'){ nx++; dir='right'; }
-  if(key==='ArrowLeft'){ nx--; dir='left'; }
-  if(key==='ArrowUp'){ ny--; dir='up'; }
-  if(key==='ArrowDown'){ ny++; dir='down'; }
+// --- Controles teclado ---
+window.addEventListener('keydown', e => { moverPacman(e.key); });
+
+// --- Controles táctiles ---
+let touchStartX = 0;
+let touchStartY = 0;
+
+window.addEventListener('touchstart', e => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, {passive:true});
+
+window.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+
+  if(Math.abs(dx) > Math.abs(dy)){
+    if(dx > 0) moverPacman('ArrowRight');
+    else moverPacman('ArrowLeft');
+  } else {
+    if(dy > 0) moverPacman('ArrowDown');
+    else moverPacman('ArrowUp');
+  }
+}, {passive:true});
+
+// Función de movimiento
+function moverPacman(key){
+  let nx = pacX;
+  let ny = pacY;
+  let direccion = '';
+
+  if(key==='ArrowRight'){ nx++; direccion='right'; }
+  if(key==='ArrowLeft'){ nx--; direccion='left'; }
+  if(key==='ArrowUp'){ ny--; direccion='up'; }
+  if(key==='ArrowDown'){ ny++; direccion='down'; }
 
   if(nx>=0 && nx<columnas && ny>=0 && ny<filas){
-    pacX=nx; pacY=ny;
+    pacX = nx;
+    pacY = ny;
 
-    // Cambiar imagen segun dirección
-    if(dir==='right') pacman.src='https://raw.githubusercontent.com/nlayja/layjaedu/main/perfil40derecha.jpg';
-    if(dir==='left') pacman.src='https://raw.githubusercontent.com/nlayja/layjaedu/main/perfil40izquierda.jpg';
-    if(dir==='up') pacman.src='https://raw.githubusercontent.com/nlayja/layjaedu/main/perfil40espaldas.jpg';
-    if(dir==='down') pacman.src='https://raw.githubusercontent.com/nlayja/layjaedu/main/perfil40agacha.jpg';
+    if(direccion==='right') pacman.src = baseURL + 'perfil40derecha.jpg';
+    if(direccion==='left')  pacman.src = baseURL + 'perfil40izquierda.jpg';
+    if(direccion==='up')    pacman.src = baseURL + 'perfil40espaldas.jpg';
+    if(direccion==='down')  pacman.src = baseURL + 'perfil40agacha.jpg';
 
     actualizarPacman();
 
-    if(laberinto[ny][nx]!==0){
-      const tipo=laberinto[ny][nx];
-      laberinto[ny][nx]=0;
-      const index=ny*columnas+nx;
-      const celda=juego.children[index];
-      celda.innerHTML='';
+    if(laberinto[ny][nx] !== 0){
+      const tipo = laberinto[ny][nx];
+      laberinto[ny][nx] = 0;
+      const index = ny*columnas + nx;
+      const celda = juego.children[index];
+
+      celda.classList.add('comida-comida');
+      setTimeout(()=> celda.innerHTML='', 300);
       celda.classList.remove('comida');
+
       conteoComido[tipo]++;
       actualizarContador();
       actualizarBarra();
     }
   }
 }
-
-// Controles teclado
-window.addEventListener('keydown', e=> moverPacman(e.key));
-
-// Controles táctiles
-let touchStartX=0, touchStartY=0;
-window.addEventListener('touchstart', e=>{
-  touchStartX=e.touches[0].clientX;
-  touchStartY=e.touches[0].clientY;
-},{passive:true});
-
-window.addEventListener('touchend', e=>{
-  const dx=e.changedTouches[0].clientX-touchStartX;
-  const dy=e.changedTouches[0].clientY-touchStartY;
-
-  if(Math.abs(dx)>Math.abs(dy)){
-    if(dx>0) moverPacman('ArrowRight');
-    else moverPacman('ArrowLeft');
-  } else {
-    if(dy>0) moverPacman('ArrowDown');
-    else moverPacman('ArrowUp');
-  }
-},{passive:true});
 </script>
 </body>
 </html>
