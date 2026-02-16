@@ -159,7 +159,7 @@ function actualizarContador(){
 }
 
 const pacman = document.createElement('img');
-pacman.src = 'https://raw.githubusercontent.com/nlayja/layjaedu/main/perfil40derecha.jpg'; 
+pacman.src = 'imagenes/perfil40derecha.jpg'; 
 pacman.id = 'pacman';
 juego.appendChild(pacman);
 
@@ -209,10 +209,10 @@ window.addEventListener('keydown', e => {
     pacX = nx;
     pacY = ny;
 
-    if(direccion==='right') pacman.src = 'https://raw.githubusercontent.com/nlayja/layjaedu/main/perfil40derecha.jpg';
-    if(direccion==='left')  pacman.src = 'https://raw.githubusercontent.com/nlayja/layjaedu/main/perfil40izquierda.jpg';
-    if(direccion==='up')    pacman.src = 'https://raw.githubusercontent.com/nlayja/layjaedu/main/perfil40espaldas.jpg';
-    if(direccion==='down')  pacman.src = 'https://raw.githubusercontent.com/nlayja/layjaedu/main/perfil40agacha.jpg';
+    if(direccion==='right') pacman.src = 'imagenes/perfil40derecha.jpg';
+    if(direccion==='left')  pacman.src = 'imagenes/perfil40izquierda.jpg';
+    if(direccion==='up')    pacman.src = 'imagenes/perfil40espaldas.jpg';
+    if(direccion==='down')  pacman.src = 'imagenes/perfil40agacha.jpg';
 
     actualizarPacman();
 
@@ -234,6 +234,4 @@ window.addEventListener('keydown', e => {
 });
 </script>
 </body>
-
 </html>
-
