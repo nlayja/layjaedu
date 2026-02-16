@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Juego Intuitivo - Versión Reducida</title>
+<style>
+body {
+  margin: 0;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100vh;
+  font-family: sans-serif;
+  overflow: hidden;
+}
+
+#contador {
+  margin: 10px;
+  font-size: 36px;
+  color: white;
+}
+
+#juego {
+  position: relative;
+  /* Ajustado: 8 columnas de 120px = 960px */
+  width: 960px;  
+  /* Ajustado: 3 filas de 120px = 360px */
+  height: 360px;  
+  background: #111;
+  display: grid;
+  /* Ajustado a 8 columnas y 3 filas */
+  grid-template-columns: repeat(8, 120px);
+  grid-template-rows: repeat(3, 120px);
+  border: 5px solid #333;
+}
+
+.celda {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  font-size: 90px; 
+}
+
+.comida-comida {
+  transform: scale(2);
+  opacity: 0;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+#pacman {
+  position: absolute;
+  z-index: 10;
+  pointer-events: none;
+  transition: left 0.1s linear, top 0.1s linear;
+}
+
+#barra-progreso {
+  /* Ajustado para coincidir con el ancho del juego */
+  width: 960px;
+  height: 30px;
+  background: #333;
+  border-radius: 15px;
+  margin-top: 15px;
+  border: 2px solid white;
+}
+#relleno {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(to right, #ffcf00, #ffea00);
+  border-radius: 12px;
+  transition: width 0.3s ease;
+}
+
+#cartel-victoria {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 40px;
+  border-radius: 30px;
+  text-align: center;
+  z-index: 100;
+  border: 10px solid #FFD700;
+  display: none;
+  box-shadow: 0 0 50px rgba(255,215,0,0.5);
+}
+</style>
+</head>
+<body>
+
+<div id="contador">🍪 0  🎂 0  🍬 0</div>
+<div id="juego"></div>
+<div id="barra-progreso"><div id="relleno"></div></div>
+
+<div id="cartel-victoria">
+  <h1 style="font-size: 80px; margin: 0;">🌟 🏆 🌟</h1>
+  <p style="font-size: 40px; margin: 10px; font-weight: bold; color: #333;">¡LO LOGRASTE!</p>
+  <p style="font-size: 60px; margin: 0;">🎈 🍦 🎈</p>
+</div>
+
+<script>
+const juego = document.getElementById('juego');
+const relleno = document.getElementById('relleno');
+const contador = document.getElementById('contador');
+const cartel = document.getElementById('cartel-victoria');
+
+let pacX = 0;
+let pacY = 0;
+
+// --- CAMBIO CLAVE: NUEVAS DIMENSIONES ---
+const filas = 3;      // Antes 4
+const columnas = 8;   // Antes 10
+
+const laberinto = [];
+let totalComida = 0;
+const tiposComida = ['🍪','🎂','🍬'];
+const conteoComido = {'🍪':0,'🎂':0,'🍬':0};
+
+function decir(texto) {
+  window.speechSynthesis.cancel();
+  const mensaje = new SpeechSynthesisUtterance(texto);
+  mensaje.lang = 'es-MX';
+  window.speechSynthesis.speak(mensaje);
+}
+
+window.addEventListener('click', () => {
+  decir("¡Hola! Ayúdame a recolectar todos los dulces.");
+}, { once: true });
+
+// Crear tablero con las nuevas medidas
+for(let y=0; y<filas; y++){
+  laberinto[y] = [];
+  for(let x=0; x<columnas; x++){
+    const celda = document.createElement('div');
+    celda.classList.add('celda');
+    juego.appendChild(celda);
+
+    if(x === 0 && y === 0){
+      laberinto[y][x] = 0;
+      celda.innerHTML = '';
+    } else {
+      const comida = tiposComida[Math.floor(Math.random()*tiposComida.length)];
+      celda.innerHTML = comida;
+      celda.classList.add('comida');
+      laberinto[y][x] = comida;
+      totalComida++;
+    }
+  }
+}
+
+function actualizarContador(){
+  contador.textContent = `🍪 ${conteoComido['🍪']}   🎂 ${conteoComido['🎂']}   🍬 ${conteoComido['🍬']}`;
+}
+
+const pacman = document.createElement('img');
+pacman.src = 'imagenes/perfil40derecha.jpg'; 
+pacman.id = 'pacman';
+juego.appendChild(pacman);
+
+pacman.onload = () => {
+  const maxSize = 110;
+  const ratio = pacman.naturalWidth / pacman.naturalHeight;
+  pacman.height = maxSize;
+  pacman.width = maxSize * ratio;
+  actualizarPacman();
+}
+
+function actualizarPacman(){
+  pacman.style.left = (pacX*120 + 5) + 'px';
+  pacman.style.top = (pacY*120 + 5) + 'px';
+}
+
+function actualizarBarra(){
+  const restantes = document.querySelectorAll('.comida').length;
+  const porcentaje = (restantes / totalComida) * 100;
+  relleno.style.width = porcentaje + '%';
+
+  if(restantes === 0) {
+    victoria();
+  }
+}
+
+function victoria() {
+  decir("¡Felicidades! ¡Eres un campeón!");
+  cartel.style.display = 'block';
+  setTimeout(() => {
+    location.reload(); 
+  }, 6000);
+}
+
+window.addEventListener('keydown', e => {
+  let nx = pacX;
+  let ny = pacY;
+  let direccion = '';
+
+  if(e.key==='ArrowRight'){ nx++; direccion='right'; }
+  if(e.key==='ArrowLeft'){ nx--; direccion='left'; }
+  if(e.key==='ArrowUp'){ ny--; direccion='up'; }
+  if(e.key==='ArrowDown'){ ny++; direccion='down'; }
+
+  // La lógica automática detecta los nuevos límites (columnas=8, filas=3)
+  if(nx>=0 && nx<columnas && ny>=0 && ny<filas){
+    pacX = nx;
+    pacY = ny;
+
+    if(direccion==='right') pacman.src = 'imagenes/perfil40derecha.jpg';
+    if(direccion==='left')  pacman.src = 'imagenes/perfil40izquierda.jpg';
+    if(direccion==='up')    pacman.src = 'imagenes/perfil40espaldas.jpg';
+    if(direccion==='down')  pacman.src = 'imagenes/perfil40agacha.jpg';
+
+    actualizarPacman();
+
+    if(laberinto[ny][nx] !== 0){
+      const tipo = laberinto[ny][nx];
+      laberinto[ny][nx] = 0;
+      const index = ny*columnas + nx;
+      const celda = juego.children[index];
+      
+      celda.classList.add('comida-comida');
+      setTimeout(()=> celda.innerHTML='', 300);
+      celda.classList.remove('comida');
+
+      conteoComido[tipo]++;
+      actualizarContador();
+      actualizarBarra();
+    }
+  }
+});
+</script>
+</body>
+</html>
