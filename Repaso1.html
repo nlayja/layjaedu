@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Repaso 1  - Aprende Jugando</title>
+<style>
+  body {
+    margin: 0;
+    font-family: "Poppins", Arial, sans-serif;
+    background: #f7f3ff;
+    text-align: center;
+  }
+
+  /* Botón Cerrar */
+  #cerrar {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    font-size: 32px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: #ff6f61;
+  }
+
+  /* Contenedor de imagen */
+  .contenedor-imagen {
+    max-width: 1200px;
+    margin: 50px auto;
+  }
+
+  .contenedor-imagen img {
+    width: 300px;
+    height: auto;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    display: block;
+    margin-left: 0;
+  }
+
+  /* Botones navegación */
+  .botones-navegacion {
+    display: flex;
+    justify-content: flex-end;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 10px;
+    box-sizing: border-box;
+  }
+
+  .botones-navegacion button {
+    padding: 12px 28px;
+    font-size: 18px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(135deg,#ffb347,#ff8c00);
+    color: white;
+    font-weight: bold;
+    transition: 0.25s;
+  }
+
+  .botones-navegacion button:hover { 
+    transform: scale(1.05); 
+    background: linear-gradient(135deg,#ffa726,#fb8c00); 
+  }
+
+
+</style>
+</head>
+<body>
+
+<!-- Botón Cerrar -->
+<button id="cerrar">✖</button>
+
+<!-- Contenedor de imagen -->
+<div class="contenedor-imagen">
+  <img src="imagenes/bloque2.jpg" alt="Aprender Silabas LNF" style="display:block; margin-left:0;">
+</div>
+
+<!-- Botón Siguiente -->
+<div class="botones-navegacion">
+  <button onclick="location.href='pagina2.html'">Siguiente ➡</button>
+</div>
+
+<script>
+  // Botón Cerrar
+  document.getElementById("cerrar").onclick = () => {
+    localStorage.removeItem("nino");
+    window.location.href = "login.html";
+  };
+</script>
+
+</body>
+</html>
