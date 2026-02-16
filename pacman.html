@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Juego Intuitivo - Versión Reducida</title>
+<title>Juego Intuitivo - Versión Táctil</title>
 <style>
 body {
   margin: 0;
@@ -24,13 +24,10 @@ body {
 
 #juego {
   position: relative;
-  /* Ajustado: 8 columnas de 120px = 960px */
   width: 960px;  
-  /* Ajustado: 3 filas de 120px = 360px */
   height: 360px;  
   background: #111;
   display: grid;
-  /* Ajustado a 8 columnas y 3 filas */
   grid-template-columns: repeat(8, 120px);
   grid-template-rows: repeat(3, 120px);
   border: 5px solid #333;
@@ -60,7 +57,6 @@ body {
 }
 
 #barra-progreso {
-  /* Ajustado para coincidir con el ancho del juego */
   width: 960px;
   height: 30px;
   background: #333;
@@ -90,6 +86,28 @@ body {
   display: none;
   box-shadow: 0 0 50px rgba(255,215,0,0.5);
 }
+
+#controles {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#controles button {
+  font-size: 40px;
+  padding: 15px 25px;
+  margin: 5px;
+  border-radius: 15px;
+  border: none;
+  background: #ffb347;
+  color: white;
+  cursor: pointer;
+}
+#controles button:active { transform: scale(0.9); }
+#controles-row {
+  display: flex;
+  justify-content: center;
+}
 </style>
 </head>
 <body>
@@ -104,6 +122,16 @@ body {
   <p style="font-size: 60px; margin: 0;">🎈 🍦 🎈</p>
 </div>
 
+<!-- Controles táctiles -->
+<div id="controles">
+  <button onclick="mover('up')">⬆️</button>
+  <div id="controles-row">
+    <button onclick="mover('left')">⬅️</button>
+    <button onclick="mover('down')">⬇️</button>
+    <button onclick="mover('right')">➡️</button>
+  </div>
+</div>
+
 <script>
 const juego = document.getElementById('juego');
 const relleno = document.getElementById('relleno');
@@ -112,11 +140,8 @@ const cartel = document.getElementById('cartel-victoria');
 
 let pacX = 0;
 let pacY = 0;
-
-// --- CAMBIO CLAVE: NUEVAS DIMENSIONES ---
-const filas = 3;      // Antes 4
-const columnas = 8;   // Antes 10
-
+const filas = 3;
+const columnas = 8;
 const laberinto = [];
 let totalComida = 0;
 const tiposComida = ['🍪','🎂','🍬'];
@@ -133,7 +158,7 @@ window.addEventListener('click', () => {
   decir("¡Hola! Ayúdame a recolectar todos los dulces.");
 }, { once: true });
 
-// Crear tablero con las nuevas medidas
+// Crear tablero
 for(let y=0; y<filas; y++){
   laberinto[y] = [];
   for(let x=0; x<columnas; x++){
@@ -180,21 +205,27 @@ function actualizarBarra(){
   const restantes = document.querySelectorAll('.comida').length;
   const porcentaje = (restantes / totalComida) * 100;
   relleno.style.width = porcentaje + '%';
-
-  if(restantes === 0) {
-    victoria();
-  }
+  if(restantes === 0) victoria();
 }
 
 function victoria() {
   decir("¡Felicidades! ¡Eres un campeón!");
   cartel.style.display = 'block';
-  setTimeout(() => {
-    location.reload(); 
-  }, 6000);
+  setTimeout(() => { location.reload(); }, 6000);
 }
 
-window.addEventListener('keydown', e => {
+// Manejar movimiento
+function mover(direccion){
+  let e = {key:''};
+  e.key = direccion==='up'?'ArrowUp':
+          direccion==='down'?'ArrowDown':
+          direccion==='left'?'ArrowLeft':
+          direccion==='right'?'ArrowRight':'';
+  procesarMovimiento(e);
+}
+
+// Función central de movimiento (llamable desde teclado o botones)
+function procesarMovimiento(e){
   let nx = pacX;
   let ny = pacY;
   let direccion = '';
@@ -204,7 +235,6 @@ window.addEventListener('keydown', e => {
   if(e.key==='ArrowUp'){ ny--; direccion='up'; }
   if(e.key==='ArrowDown'){ ny++; direccion='down'; }
 
-  // La lógica automática detecta los nuevos límites (columnas=8, filas=3)
   if(nx>=0 && nx<columnas && ny>=0 && ny<filas){
     pacX = nx;
     pacY = ny;
@@ -221,7 +251,6 @@ window.addEventListener('keydown', e => {
       laberinto[ny][nx] = 0;
       const index = ny*columnas + nx;
       const celda = juego.children[index];
-      
       celda.classList.add('comida-comida');
       setTimeout(()=> celda.innerHTML='', 300);
       celda.classList.remove('comida');
@@ -231,9 +260,10 @@ window.addEventListener('keydown', e => {
       actualizarBarra();
     }
   }
-});
+}
+
+// Evento teclado
+window.addEventListener('keydown', procesarMovimiento);
 </script>
 </body>
-
 </html>
-
