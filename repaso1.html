@@ -8,7 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <!-- FUENTE TIPO MOLDE ESCOLAR -->
-<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Baloo+2:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
 
 <style>
 :root {
@@ -19,51 +19,175 @@
     --fluidez-blue: #03a9f4;
 }
 
-/* 🔥 CAMBIO DE TIPOGRAFÍA */
+/* Body adaptativo para móviles */
 body {
     font-family: 'Patrick Hand', cursive;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     margin: 0;
     background-color: var(--bg-color);
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
-/* resto de tu CSS EXACTAMENTE igual */
+/* Overlay inicial full screen */
+#overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    cursor: pointer;
+    text-align: center;
+    color: white;
+    transition: 0.8s ease-in-out;
+}
+
+/* Texto animado inicio */
+.texto-inicio {
+    font-size: clamp(20px, 7vw, 36px);
+    font-weight: bold;
+    background: #ffeb3b;
+    color: #7b1fa2;
+    padding: 15px 30px;
+    border-radius: 60px;
+    border: 5px solid white;
+    box-shadow: 0 6px 0 #fbc02d;
+    z-index: 101;
+    animation: pulse 1s infinite alternate;
+}
+@keyframes pulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); }
+}
+
+/* Decoración confetti */
+.decoracion-fiesta {
+    position: absolute;
+    top: -50px;
+    font-size: 35px;
+    opacity: 0.8;
+    animation: caer linear infinite;
+    pointer-events: none;
+}
+@keyframes caer {
+    0% { transform: translateY(0vh) rotate(0deg); }
+    100% { transform: translateY(110vh) rotate(360deg); }
+}
+
+/* Card frases */
 .card {
     background: white;
-    padding: 30px;
-    border-radius: 50px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    padding: 25px;
+    border-radius: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     text-align: center;
     width: 90%;
-    max-width: 800px;
-    border: 10px solid var(--main-color);
+    max-width: 400px;
+    margin: 50px auto;
+    border: 8px solid var(--main-color);
     position: relative;
     z-index: 10;
 }
 
+/* Contador estrellas */
+.star-counter {
+    position: absolute;
+    top: -15px;
+    right: 20px;
+    font-size: 20px;
+    color: #f1c40f;
+    font-weight: bold;
+    background: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 3px solid #f1c40f;
+}
+
+/* Contenedor de frase */
 #sentence-container {
-    font-size: 32px;
+    font-size: 22px;
+    margin: 15px 0;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    min-height: 60px;
+    align-items: center;
 }
 
+/* Palabras y sílabas */
+.word-token {
+    transition: all 0.2s;
+    padding: 3px 8px;
+    border-radius: 12px;
+}
+.sombra-silaba { background-color: #e8f5e9; color: var(--vivid-green) !important; transform: scale(1.1);}
+.sombra-palabra { background-color: var(--soft-color); color: var(--main-color) !important; transform: scale(1.1);}
+.sombra-fluida { background-color: #e1f5fe; color: var(--fluidez-blue) !important; transform: scale(1.05); }
+
+/* Emoji palabra actual */
 #word-display {
-    font-size: 80px;
+    font-size: 60px;
+    font-weight: bold;
+    min-height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 15px 0;
+}
+.silaba-bubble {
+    padding: 4px 10px;
+    border-radius: 15px;
+    color: #bdc3c7;
+}
+.silaba-active {
+    background-color: var(--vivid-green);
+    color: white !important;
 }
 
-/* resto igual que tu versión original */
+/* Botones controles */
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+button.circle-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    color: white;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.btn-play { background-color: var(--vivid-green); box-shadow: 0 4px 0 #388e3c;}
+.btn-pause { background-color: #ff9800; box-shadow: 0 4px 0 #f57c00; }
+
+/* Texto progreso */
+.progress-text {
+    font-size: 14px;
+    color: #95a5a6;
+    margin-top: 10px;
+    font-weight: bold;
+}
 </style>
 </head>
 <body>
 
-<!-- TU HTML ORIGINAL SIN CAMBIOS -->
+<!-- Overlay inicio -->
 <div id="overlay" onclick="iniciarConMotivacion()">
     <div class="texto-inicio">VAMOS A LEER JUNTOS</div>
-    <p style="margin-top:20px; font-size:24px; color: white; font-weight: bold; z-index: 101;">Toca para comenzar la aventura</p>
+    <p style="margin-top:20px; font-size:20px; color: white; font-weight: bold; z-index: 101;">Toca para comenzar la aventura</p>
 </div>
 
+<!-- Tarjeta frases -->
 <div class="card">
     <div class="star-counter" id="starBadge">⭐ <span id="stars">0</span></div>
     <div id="sentence-container"></div>
@@ -75,12 +199,42 @@ body {
 </div>
 
 <script>
+// Emoji confetti
+const figuras = ['😊','❤️','🌈','🎉','🍦','🌟','🍭','🌸','🐶','🍕'];
+const overlay = document.getElementById('overlay');
+for(let i=0;i<30;i++){
+    const span = document.createElement('span');
+    span.className='decoracion-fiesta';
+    span.innerText=figuras[Math.floor(Math.random()*figuras.length)];
+    span.style.left=Math.random()*100+'vw';
+    span.style.animationDelay=(Math.random()*5)+'s';
+    span.style.animationDuration=(Math.random()*3+3)+'s';
+    overlay.appendChild(span);
+}
 
-/* 🔥 NUEVA FUNCIÓN PARA SELECCIONAR VOZ MASCULINA */
+// Frases ejemplo
+const frasesBase=[
+    {f:"El pato al agua",s:[["El"],["pa","to"],["al"],["a","gua"]]},
+    {f:"Pepe da un beso",s:[["Pe","pe"],["da"],["un"],["be","so"]]},
+    {f:"Mi casa es linda",s:[["Mi"],["ca","sa"],["es"],["lin","da"]]}
+];
+
+// Mezclar frases
+function mezclarFrases(lista){
+    for(let i=lista.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [lista[i],lista[j]]=[lista[j],lista[i]];
+    }
+}
+mezclarFrases(frasesBase);
+
+let totalEstrellas=0;
+let indice=0;
+let leyendo=false;
+
+// 🔥 VOZ MASCULINA
 function obtenerVozMasculina() {
     const voces = speechSynthesis.getVoices();
-    
-    // Buscar voz masculina en español
     let voz = voces.find(v => 
         v.lang.includes("es") && 
         (v.name.toLowerCase().includes("male") ||
@@ -88,35 +242,136 @@ function obtenerVozMasculina() {
          v.name.toLowerCase().includes("carlos") ||
          v.name.toLowerCase().includes("diego"))
     );
-
-    // Si no encuentra masculina, usar primera en español
-    if (!voz) {
-        voz = voces.find(v => v.lang.includes("es"));
-    }
-
+    if(!voz) voz = voces.find(v=>v.lang.includes("es"));
     return voz;
 }
+let vozSeleccionada=null;
+speechSynthesis.onvoiceschanged=()=>{vozSeleccionada=obtenerVozMasculina();};
 
-let vozSeleccionada = null;
-
-speechSynthesis.onvoiceschanged = () => {
-    vozSeleccionada = obtenerVozMasculina();
-};
-
-/* 🔥 MODIFICACIÓN SOLO EN HABLAR */
-async function hablar(texto, velocidad, tono = 1) {
-    return new Promise(resolve => {
+// Hablar
+async function hablar(texto,velocidad,tono=1){
+    return new Promise(resolve=>{
         window.speechSynthesis.cancel();
-        const m = new SpeechSynthesisUtterance(texto);
-        m.lang = 'es-MX';
-        m.rate = velocidad;
-        m.pitch = 0.8; // más grave (masculino)
-        m.voice = vozSeleccionada;
-        m.onend = resolve;
+        const m=new SpeechSynthesisUtterance(texto);
+        m.lang='es-MX';
+        m.rate=velocidad;
+        m.pitch=0.8;
+        m.voice=vozSeleccionada;
+        m.onend=resolve;
         window.speechSynthesis.speak(m);
     });
 }
 
+// Iniciar lectura
+async function iniciarConMotivacion(){
+    overlay.style.transform='translateY(-100%)';
+    setTimeout(()=>overlay.innerHTML='',800);
+    await hablar("¡Hola! Vamos a leer juntos.",0.9,1.4);
+    leyendo=true;
+    actualizarBoton();
+    iniciarLectura();
+}
+
+// Actualizar card
+function actualizarVista(){
+    const item=frasesBase[indice];
+    const container=document.getElementById('sentence-container');
+    container.innerHTML='';
+    item.f.split(" ").forEach((p,i)=>{
+        const span=document.createElement('span');
+        span.innerText=p; span.className='word-token'; span.id=`t-${i}`;
+        container.appendChild(span);
+    });
+    document.getElementById('currentIdx').innerText=indice+1;
+    document.getElementById('word-display').innerText="😊";
+}
+
+// Lectura frase
+async function iniciarLectura(){
+    if(!leyendo) return;
+    const datos=frasesBase[indice];
+    const palabrasTxt=datos.f.split(" ");
+    const wordDisplay=document.getElementById('word-display');
+    actualizarVista();
+
+    for(let i=0;i<datos.s.length;i++){
+        if(!leyendo) return;
+        const token=document.getElementById(`t-${i}`);
+        wordDisplay.innerHTML='';
+        const spans=datos.s[i].map(sil=>{
+            const s=document.createElement('span');
+            s.innerText=sil; s.className='silaba-bubble';
+            wordDisplay.appendChild(s);
+            return s;
+        });
+        for(let j=0;j<spans.length;j++){
+            if(!leyendo) return;
+            spans[j].classList.add('silaba-active');
+            token.classList.add('sombra-silaba');
+            await hablar(datos.s[i][j],0.45);
+            await new Promise(r=>setTimeout(r,150));
+            spans[j].classList.remove('silaba-active');
+        }
+        wordDisplay.innerHTML=`<span style="color:var(--main-color)">${palabrasTxt[i]}</span>`;
+        token.className="word-token sombra-palabra";
+        await hablar(palabrasTxt[i],0.75);
+        await new Promise(r=>setTimeout(r,500));
+        token.classList.remove('sombra-palabra','sombra-silaba');
+    }
+
+    if(!leyendo) return;
+    wordDisplay.innerText="📖";
+    await hablar("Ahora todo junto.",0.95);
+    for(let i=0;i<palabrasTxt.length;i++){
+        if(!leyendo) return;
+        const token=document.getElementById(`t-${i}`);
+        token.classList.add('sombra-palabra');
+        await hablar(palabrasTxt[i],0.85);
+        token.classList.remove('sombra-palabra');
+        await new Promise(r=>setTimeout(r,100));
+    }
+
+    if(!leyendo) return;
+    wordDisplay.innerText="🚀";
+    await hablar("Ahora leamos más rápido.",1.1);
+    const tokens=document.querySelectorAll('.word-token');
+    hablar(datos.f,1.05);
+    for(let i=0;i<tokens.length;i++){
+        if(!leyendo) break;
+        tokens[i].classList.add('sombra-fluida');
+        await new Promise(r=>setTimeout(r,450));
+        tokens[i].classList.remove('sombra-fluida');
+    }
+
+    if(!leyendo) return;
+    totalEstrellas++;
+    document.getElementById('stars').innerText=totalEstrellas;
+    confetti({particleCount:100,spread:70,origin:{y:0.7}});
+    wordDisplay.innerText="🌟";
+    await hablar("¡Muy bien!",1.2);
+
+    setTimeout(()=>{ 
+        if(leyendo){ 
+            indice=(indice+1)%frasesBase.length;
+            iniciarLectura();
+        } 
+    },3000);
+}
+
+// Botón play/pause
+function togglePlay(){
+    leyendo=!leyendo;
+    if(!leyendo) window.speechSynthesis.cancel();
+    else iniciarLectura();
+    actualizarBoton();
+}
+function actualizarBoton(){
+    const btn=document.getElementById('btnPlay');
+    btn.innerHTML=leyendo?"⏸️":"▶️";
+    btn.className=leyendo?"circle-btn btn-pause":"circle-btn btn-play";
+}
+
+actualizarVista();
 </script>
 
 </body>
