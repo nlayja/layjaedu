@@ -1,344 +1,222 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Súper Lector - 100 Frases Mágicas</title>
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <style>
-        :root {
-            --bg-color: #fdfbff;
-            --main-color: #9c27b0;
-            --soft-color: #f3e5f5;
-            --vivid-green: #4caf50;
-            --fluidez-blue: #03a9f4;
-        }
-        body { 
-              font-family: 'Pacifico', cursive;
-              display: flex; 
-              justify-content: center; 
-              align-items: center; 
-              height: 100vh; 
-              margin: 0; 
-              background-color: var(--bg-color); 
-              overflow: hidden;
-        }
-        #overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: linear-gradient(135deg, #6c5ce7, #a29bfe); 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            z-index: 100; cursor: pointer; text-align: center; color: white; transition: 0.8s ease-in-out; 
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Súper Lector - 100 Frases Mágicas</title>
 
-        .decoracion-fiesta { position: absolute; top: -50px; font-size: 50px; opacity: 0.8; animation: caer linear infinite; pointer-events: none; }
-        @keyframes caer { 0% { transform: translateY(0vh) rotate(0deg); } 100% { transform: translateY(110vh) rotate(360deg); } }
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-        .texto-inicio { 
-            font-size: clamp(20px, 5vw, 40px); font-weight: bold; 
-            background: #ffeb3b; color: #7b1fa2; padding: 20px 40px; border-radius: 60px; 
-            border: 6px solid white; box-shadow: 0 10px 0 #fbc02d; z-index: 101;
-            animation: pulse 1s infinite alternate;
-        }
-        @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
+<style>
+:root {
+    --bg-color: #fdfbff;
+    --main-color: #9c27b0;
+    --soft-color: #f3e5f5;
+    --vivid-green: #4caf50;
+    --fluidez-blue: #03a9f4;
+}
 
-        .card { background: white; padding: 30px; border-radius: 50px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 800px; border: 10px solid var(--main-color); position: relative; z-index: 10; }
-        .star-counter { position: absolute; top: -20px; right: 30px; font-size: 24px; color: #f1c40f; font-weight: bold; background: white; padding: 10px 20px; border-radius: 30px; border: 4px solid #f1c40f; }
+body {
+    font-family: 'Pacifico', cursive;
+    font-style: normal;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: var(--bg-color);
+    overflow: hidden;
+}
 
-        #sentence-container { font-size: 30px; color: #dcdde1; margin: 20px 0; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; min-height: 80px; align-items: center; }
-        .word-token { transition: all 0.2s; padding: 5px 12px; border-radius: 15px; }
-        .sombra-silaba { background-color: #e8f5e9; color: var(--vivid-green) !important; transform: scale(1.1); }
-        .sombra-palabra { background-color: var(--soft-color); color: var(--main-color) !important; transform: scale(1.1); }
-        .sombra-fluida { background-color: #e1f5fe; color: var(--fluidez-blue) !important; transform: scale(1.05); }
-        
-        #word-display { font-size: 70px; font-weight: bold; min-height: 140px; display: flex; justify-content: center; align-items: center; }
-        .silaba-bubble { padding: 5px 15px; border-radius: 20px; color: #bdc3c7; }
-        .silaba-active { background-color: var(--vivid-green); color: white !important; }
+/* Forzar script limpia */
+#sentence-container,
+#word-display,
+.texto-inicio {
+    font-family: 'Pacifico', cursive;
+    font-style: normal;
+}
 
-        .controls { display: flex; justify-content: center; gap: 20px; margin-top: 10px; }
-        button.circle-btn { width: 80px; height: 80px; border-radius: 50%; border: none; cursor: pointer; font-size: 30px; color: white; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
-        .btn-play { background-color: var(--vivid-green); box-shadow: 0 6px 0 #388e3c; }
-        .btn-pause { background-color: #ff9800; box-shadow: 0 6px 0 #f57c00; }
-        .progress-text { font-size: 16px; color: #95a5a6; margin-top: 15px; font-weight: bold; }
-    </style>
+#overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    cursor: pointer;
+    text-align: center;
+    color: white;
+    transition: 0.8s ease-in-out;
+}
+
+.texto-inicio {
+    font-size: clamp(20px, 5vw, 40px);
+    background: #ffeb3b;
+    color: #7b1fa2;
+    padding: 20px 40px;
+    border-radius: 60px;
+    border: 6px solid white;
+    box-shadow: 0 10px 0 #fbc02d;
+    animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); }
+}
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 50px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    text-align: center;
+    width: 90%;
+    max-width: 800px;
+    border: 10px solid var(--main-color);
+}
+
+#sentence-container {
+    font-size: 30px;
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.word-token {
+    padding: 5px 12px;
+    border-radius: 15px;
+}
+
+#word-display {
+    font-size: 70px;
+    font-weight: bold;
+    min-height: 140px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-size: 30px;
+    color: white;
+    background-color: var(--vivid-green);
+}
+
+</style>
 </head>
 <body>
 
-<div id="overlay" onclick="iniciarConMotivacion()">
+<div id="overlay" onclick="iniciar()">
     <div class="texto-inicio">VAMOS A LEER JUNTOS</div>
-    <p style="margin-top:20px; font-size:24px; color: white; font-weight: bold; z-index: 101;">Toca para comenzar la aventura</p>
+    <p style="margin-top:20px; font-size:24px;">Toca para comenzar</p>
 </div>
 
 <div class="card">
-    <div class="star-counter" id="starBadge">⭐ <span id="stars">0</span></div>
     <div id="sentence-container"></div>
     <div id="word-display">😊</div>
     <div class="controls">
-        <button id="btnPlay" class="circle-btn btn-play" onclick="togglePlay()">▶️</button>
+        <button onclick="togglePlay()">▶️</button>
     </div>
-    <div class="progress-text">Frase <span id="currentIdx">1</span> de 100</div>
 </div>
 
 <script>
-    const figuras = ['😊', '❤️', '🌈', '🎉', '🍦', '🌟', '🍭', '🌸', '🐶', '🍕'];
-    const overlay = document.getElementById('overlay');
-    for(let i=0; i<40; i++) {
-        const span = document.createElement('span');
-        span.className = 'decoracion-fiesta';
-        span.innerText = figuras[Math.floor(Math.random()*figuras.length)];
-        span.style.left = Math.random() * 100 + 'vw';
-        span.style.animationDelay = (Math.random() * 5) + 's';
-        span.style.animationDuration = (Math.random() * 3 + 3) + 's';
-        overlay.appendChild(span);
-    }
 
-    const fonetica = {
-        "za": "sah", "re": "rre", "ri": "rri", "ro": "rro", "ru": "rru",
-        "ha": "a", "he": "e", "hi": "i", "ho": "o", "hu": "u"
-    };
+let leyendo = false;
 
-    const frasesBase = [
-        { f: "El pato al agua", s: [["El"], ["pa", "to"], ["al"], ["a", "gua"]] },
-        { f: "Pepe da un beso", s: [["Pe", "pe"], ["da"], ["un"], ["be", "so"]] },
-        { f: "Mi casa es linda", s: [["Mi"], ["ca", "sa"], ["es"], ["lin", "da"]] },
-        { f: "Toma tu rico coco", s: [["To", "ma"], ["tu"], ["ri", "co"], ["co", "co"]] },
-        { f: "Paco mira el sol", s: [["Pa", "co"], ["mi", "ra"], ["el"], ["sol"]] },
-        { f: "Hugo tiene dinero", s: [["Hu", "go"], ["tie", "ne"], ["di", "ne", "ro"]] },
-        { f: "Me gusta leer", s: [["Me"], ["gus", "ta"], ["le", "er"]] },
-        { f: "Mi tío es alto", s: [["Mi"], ["tí", "o"], ["es"], ["al", "to"]] },
-        { f: "La pelota es roja", s: [["La"], ["pe", "lo", "ta"], ["es"], ["ro", "ja"]] },
-        { f: "Lola va a casa", s: [["Lo", "la"], ["va"], ["a"], ["ca", "sa"]] },
-        { f: "El pato hace cua", s: [["El"], ["pa", "to"], ["ha", "ce"], ["cua"]] },
-        { f: "Toma tu pelota", s: [["To", "ma"], ["tu"], ["pe", "lo", "ta"]] },
-        { f: "Papi pide café", s: [["Pa", "pi"], ["pi", "de"], ["ca", "fé"]] },
-        { f: "El dinero es mío", s: [["El"], ["di", "ne", "ro"], ["es"], ["mí", "o"]] },
-        { f: "Este es el parque", s: [["Es", "te"], ["es"], ["el"], ["par", "que"]] },
-        { f: "Ema toma té", s: [["E", "ma"], ["to", "ma"], ["té"]] },
-        { f: "El coco es de mamá", s: [["El"], ["co", "co"], ["es"], ["de"], ["ma", "má"]] },
-        { f: "Ven con mi tía", s: [["Ven"], ["con"], ["mi"], ["tí", "a"]] },
-        { f: "Ese pato es lindo", s: [["E", "se"], ["pa", "to"], ["es"], ["lin", "do"]] },
-        { f: "Mi tío me cuida", s: [["Mi"], ["tí", "o"], ["me"], ["cui", "da"]] },
-        { f: "La pelota bota", s: [["La"], ["pe", "lo", "ta"], ["bo", "ta"]] },
-        { f: "Hugo usa su dinero", s: [["Hu", "go"], ["u", "sa"], ["su"], ["di", "ne", "ro"]] },
-        { f: "Sí es mi casa", s: [["Sí"], ["es"], ["mi"], ["ca", "sa"]] },
-        { f: "El pato tiene hambre", s: [["El"], ["pa", "to"], ["tie", "ne"], ["ham", "bre"]] },
-        { f: "Tú eres mi amigo", s: [["Tú"], ["e", "res"], ["mi"], ["a", "mi", "go"]] },
-        { f: "Ese coco es verde", s: [["E", "se"], ["co", "co"], ["es"], ["ver", "de"]] },
-        { f: "Lola ve la pelota", s: [["Lo", "la"], ["ve"], ["la"], ["pe", "lo", "ta"]] },
-        { f: "Toma un poco de té", s: [["To", "ma"], ["un"], ["po", "co"], ["de"], ["té"]] },
-        { f: "Paco come un taco", s: [["Pa", "co"], ["co", "me"], ["un"], ["ta", "co"]] },
-        { f: "El parque es grande", s: [["El"], ["par", "que"], ["es"], ["gran", "de"]] },
-        { f: "El pato nada bien", s: [["El"], ["pa", "to"], ["na", "da"], ["bien"]] },
-        { f: "Mi tío tiene un barco", s: [["Mi"], ["tí", "o"], ["tie", "ne"], ["un"], ["bar", "co"]] },
-        { f: "Hugo tiene el coco", s: [["Hu", "go"], ["tie", "ne"], ["el"], ["co", "co"]] },
-        { f: "Pepe me da el pan", s: [["Pe", "pe"], ["me"], ["da"], ["el"], ["pan"]] },
-        { f: "Este es para Beto", s: [["Es", "te"], ["es"], ["pa", "ra"], ["Be", "to"]] },
-        { f: "Esa casa es mía", s: [["E", "sa"], ["ca", "sa"], ["es"], ["mí", "a"]] },
-        { f: "Me gusta jugar", s: [["Me"], ["gus", "ta"], ["ju", "gar"]] },
-        { f: "El pato camina", s: [["El"], ["pa", "to"], ["ca", "mi", "na"]] },
-        { f: "Paco toma su té", s: [["Pa", "co"], ["to", "ma"], ["su"], ["té"]] },
-        { f: "Lola me da un beso", s: [["Lo", "la"], ["me"], ["da"], ["un"], ["be", "so"]] },
-        { f: "El coco está rico", s: [["El"], ["co", "co"], ["es", "tá"], ["ri", "co"]] },
-        { f: "Mi tía tiene dinero", s: [["Mi"], ["tí", "a"], ["tie", "ne"], ["di", "ne", "ro"]] },
-        { f: "El pato es mío", s: [["El"], ["pa", "to"], ["es"], ["mí", "o"]] },
-        { f: "Pepe mira el pico", s: [["Pe", "pe"], ["mi", "ra"], ["el"], ["pi", "co"]] },
-        { f: "Toma tu pan rico", s: [["To", "ma"], ["tu"], ["pan"], ["ri", "co"]] },
-        { f: "Paco va a casa", s: [["Pa", "co"], ["va"], ["a"], ["ca", "sa"]] },
-        { f: "La pelota es verde", s: [["La"], ["pe", "lo", "ta"], ["es"], ["ver", "de"]] },
-        { f: "El sol nos da luz", s: [["El"], ["sol"], ["nos"], ["da"], ["luz"]] },
-        { f: "Me gusta mi casa", s: [["Me"], ["gus", "ta"], ["mi"], ["ca", "sa"]] },
-        { f: "¡Lo logré todo!", s: [["Lo"], ["lo", "gré"], ["to", "do"]] },
-        { f: "El oso toma miel", s: [["El"], ["o", "so"], ["to", "ma"], ["miel"]] },
-        { f: "Mi mamá me ama", s: [["Mi"], ["ma", "má"], ["me"], ["a", "ma"]] },
-        { f: "Esa es mi mano", s: [["E", "sa"], ["es"], ["mi"], ["ma", "no"]] },
-        { f: "Tengo un dado azul", s: [["Ten", "go"], ["un"], ["da", "do"], ["a", "zul"]] },
-        { f: "El nene tiene sed", s: [["El"], ["ne", "ne"], ["tie", "ne"], ["sed"]] },
-        { f: "Puse la mesa", s: [["Pu", "se"], ["la"], ["me", "sa"]] },
-        { f: "Mi bota es de lana", s: [["Mi"], ["bo", "ta"], ["es"], ["de"], ["la", "na"]] },
-        { f: "El lobo da miedo", s: [["El"], ["lo", "bo"], ["da"], ["mie", "do"]] },
-        { f: "La nube es blanca", s: [["La"], ["nu", "be"], ["es"], ["blan", "ca"]] },
-        { f: "Toma de tu vaso", s: [["To", "ma"], ["de"], ["tu"], ["va", "so"]] },
-        { f: "Fito es mi gato", s: [["Fi", "to"], ["es"], ["mi"], ["ga", "to"]] },
-        { f: "La foca nada", s: [["La"], ["fo", "ca"], ["na", "da"]] },
-        { f: "Dame ese dulce", s: [["Da", "me"], ["e", "se"], ["dul", "ce"]] },
-        { f: "El sol sale", s: [["El"], ["sol"], ["sa", "le"]] },
-        { f: "Mira esa flor", s: [["Mi", "ra"], ["e", "sa"], ["flor"]] },
-        { f: "Susi toma sopa", s: [["Su", "si"], ["to", "ma"], ["so", "pa"]] },
-        { f: "Mi papá es bueno", s: [["Mi"], ["pa", "pá"], ["es"], ["bue", "no"]] },
-        { f: "La luna sale", s: [["La"], ["lu", "na"], ["sa", "le"]] },
-        { f: "Tengo diez panes", s: [["Ten", "go"], ["diez"], ["pa", "nes"]] },
-        { f: "El bote es madera", s: [["El"], ["bo", "te"], ["es"], ["ma", "de", "ra"]] },
-        { f: "La vaca da leche", s: [["La"], ["va", "ca"], ["da"], ["le", "che"]] },
-        { f: "Mi perro es café", s: [["Mi"], ["pe", "rro"], ["es"], ["ca", "fé"]] },
-        { f: "El gato se baña", s: [["El"], ["ga", "to"], ["se"], ["ba", "ña"]] },
-        { f: "Veo un nido", s: [["Ve", "o"], ["un"], ["ni", "do"]] },
-        { f: "Ese es mi pie", s: [["E", "se"], ["es"], ["mi"], ["pie"]] },
-        { f: "La sopa quema", s: [["La"], ["so", "pa"], ["que", "ma"]] },
-        { f: "Tengo un buen amigo", s: [["Ten", "go"], ["un"], ["buen"], ["a", "mi", "go"]] },
-        { f: "La piña es rica", s: [["La"], ["pi", "ña"], ["es"], ["ri", "ca"]] },
-        { f: "El puma es veloz", s: [["El"], ["pu", "ma"], ["es"], ["ve", "loz"]] },
-        { f: "Mi ropa es nueva", s: [["Mi"], ["ro", "pa"], ["es"], ["nue", "va"]] },
-        { f: "Esa uva es dulce", s: [["E", "sa"], ["u", "va"], ["es"], ["dul", "ce"]] },
-        { f: "Toma mi mano", s: [["To", "ma"], ["mi"], ["ma", "no"]] },
-        { f: "El mono come", s: [["El"], ["mo", "no"], ["co", "me"]] },
-        { f: "La casa tiene luz", s: [["La"], ["ca", "sa"], ["tie", "ne"], ["luz"]] },
-        { f: "Mira el pino alto", s: [["Mi", "ra"], ["el"], ["pi", "no"], ["al", "to"]] },
-        { f: "Puse mi saco", s: [["Pu", "se"], ["mi"], ["sa", "co"]] },
-        { f: "El sapo salta", s: [["El"], ["sa", "po"], ["sal", "ta"]] },
-        { f: "La nena toma jugo", s: [["La"], ["ne", "na"], ["to", "ma"], ["ju", "go"]] },
-        { f: "Tengo una duda", s: [["Ten", "go"], ["u", "na"], ["du", "da"]] },
-        { f: "Mi tío tiene calma", s: [["Mi"], ["tí", "o"], ["tie", "ne"], ["cal", "ma"]] },
-        { f: "Esa foto es buena", s: [["E", "sa"], ["fo", "to"], ["es"], ["bue", "na"]] },
-        { f: "El cine es lindo", s: [["El"], ["ci", "ne"], ["es"], ["lin", "do"]] },
-        { f: "Tomo agua de coco", s: [["To", "mo"], ["a", "gua"], ["de"], ["co", "co"]] },
-        { f: "La mesa es de metal", s: [["La"], ["me", "sa"], ["es"], ["de"], ["me", "tal"]] },
-        { f: "Mi cara está limpia", s: [["Mi"], ["ca", "ra"], ["es", "tá"], ["lim", "pia"]] },
-        { f: "El viento sopla", s: [["El"], ["vien", "to"], ["so", "pla"]] },
-        { f: "Tengo mucha suerte", s: [["Ten", "go"], ["mu", "cha"], ["suer", "te"]] },
-        { f: "La rana salta", s: [["La"], ["ra", "na"], ["sal", "ta"]] },
-        { f: "Eres un sol", s: [["E", "res"], ["un"], ["sol"]] },
-        { f: "Soy un campeón", s: [["Soy"], ["un"], ["cam", "pe", "ón"]] }
-    ];
+const frases = [
+    "El pato nada",
+    "Mi mamá me ama",
+    "La luna sale",
+    "Soy un campeón"
+];
 
-    function mezclarFrases(lista) {
-        for (let i = lista.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [lista[i], lista[j]] = [lista[j], lista[i]];
-        }
-    }
+let indice = 0;
 
-    mezclarFrases(frasesBase);
+async function hablar(texto, velocidad=0.9, tono=1.1) {
+    if (!leyendo && !texto.includes("Hola")) return;
 
-    let totalEstrellas = 0;
-    let indice = 0;
-    let leyendo = false;
+    return new Promise(resolve => {
 
-    async function hablar(texto, velocidad, tono = 1.3) {
-        if (!leyendo && !texto.includes("Hola")) return; 
-        return new Promise(resolve => {
-            window.speechSynthesis.cancel();
-            let procesado = texto.toLowerCase().trim();
-            if(fonetica[procesado]) {
-                procesado = fonetica[procesado];
-            } 
-            const m = new SpeechSynthesisUtterance(procesado); 
-            m.lang = 'es-MX'; 
-            m.rate = velocidad; 
-            m.pitch = tono;
-            m.onend = resolve;
-            window.speechSynthesis.speak(m);
-        });
-    }
+        window.speechSynthesis.cancel();
 
-    async function iniciarConMotivacion() {
-        const overlay = document.getElementById('overlay');
-        overlay.style.transform = 'translateY(-100%)';
-        setTimeout(() => overlay.innerHTML = '', 800);
-        await hablar("¡Hola! Vamos a leer juntos.", 0.9, 1.4);
-        leyendo = true;
-        actualizarBoton();
-        iniciarLectura();
-    }
+        const mensaje = new SpeechSynthesisUtterance(texto);
+        mensaje.lang = "es-MX";
+        mensaje.rate = velocidad;
+        mensaje.pitch = tono;
 
-    function actualizarVista() {
-        const item = frasesBase[indice];
-        const container = document.getElementById('sentence-container');
-        container.innerHTML = '';
-        item.f.split(" ").forEach((p, i) => {
-            const span = document.createElement('span');
-            span.innerText = p; span.className = 'word-token'; span.id = `t-${i}`;
-            container.appendChild(span);
-        });
-        document.getElementById('currentIdx').innerText = indice + 1;
-        document.getElementById('word-display').innerText = "😊";
-    }
+        function asignarVoz() {
+            const voces = speechSynthesis.getVoices();
 
-    async function iniciarLectura() {
-        if (!leyendo) return;
-        const datos = frasesBase[indice];
-        const palabrasTxt = datos.f.split(" ");
-        const wordDisplay = document.getElementById('word-display');
-        actualizarVista();
+            const vozMasculina = voces.find(v =>
+                v.lang.toLowerCase().includes("es") &&
+                (
+                    v.name.toLowerCase().includes("jorge") ||
+                    v.name.toLowerCase().includes("hector") ||
+                    v.name.toLowerCase().includes("mexico") ||
+                    v.name.toLowerCase().includes("male") ||
+                    v.name.toLowerCase().includes("man")
+                )
+            );
 
-        for (let i = 0; i < datos.s.length; i++) {
-            if (!leyendo) return;
-            const token = document.getElementById(`t-${i}`);
-            wordDisplay.innerHTML = '';
-            const spans = datos.s[i].map(sil => {
-                const s = document.createElement('span');
-                s.innerText = sil; s.className = 'silaba-bubble';
-                wordDisplay.appendChild(s);
-                return s;
-            });
-            for (let j = 0; j < spans.length; j++) {
-                if (!leyendo) return;
-                spans[j].classList.add('silaba-active');
-                token.classList.add('sombra-silaba');
-                await hablar(datos.s[i][j], 0.45);
-                await new Promise(r => setTimeout(r, 150));
-                spans[j].classList.remove('silaba-active');
-            }
-            wordDisplay.innerHTML = `<span style="color:var(--main-color)">${palabrasTxt[i]}</span>`;
-            token.className = "word-token sombra-palabra";
-            await hablar(palabrasTxt[i], 0.75);
-            await new Promise(r => setTimeout(r, 500));
-            token.classList.remove('sombra-palabra', 'sombra-silaba');
+            if (vozMasculina) mensaje.voice = vozMasculina;
+
+            mensaje.onend = resolve;
+            speechSynthesis.speak(mensaje);
         }
 
-        if (!leyendo) return;
-        wordDisplay.innerText = "📖";
-        await hablar("Ahora todo junto.", 0.95);
-        for (let i = 0; i < palabrasTxt.length; i++) {
-            if (!leyendo) return;
-            const token = document.getElementById(`t-${i}`);
-            token.classList.add('sombra-palabra');
-            await hablar(palabrasTxt[i], 0.85);
-            token.classList.remove('sombra-palabra');
-            await new Promise(r => setTimeout(r, 100));
+        if (speechSynthesis.getVoices().length === 0) {
+            speechSynthesis.onvoiceschanged = asignarVoz;
+        } else {
+            asignarVoz();
         }
+    });
+}
 
-        if (!leyendo) return;
-        wordDisplay.innerText = "🚀";
-        await hablar("Ahora leamos más rápido.", 1.1);
-        const tokens = document.querySelectorAll('.word-token');
-        hablar(datos.f, 1.05); 
-        for (let i = 0; i < tokens.length; i++) {
-            if (!leyendo) break;
-            tokens[i].classList.add('sombra-fluida');
-            await new Promise(r => setTimeout(r, 450));
-            tokens[i].classList.remove('sombra-fluida');
-        }
+async function iniciar() {
+    document.getElementById("overlay").style.display = "none";
+    leyendo = true;
+    iniciarLectura();
+}
 
-        if (!leyendo) return;
-        totalEstrellas++;
-        document.getElementById('stars').innerText = totalEstrellas;
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.7 } });
-        wordDisplay.innerText = "🌟";
-        await hablar("¡Muy bien!", 1.2);
-        
-        setTimeout(() => { 
-            if(leyendo) { 
-                indice = (indice + 1) % frasesBase.length; 
-                iniciarLectura(); 
-            } 
-        }, 3000);
-    }
+async function iniciarLectura() {
+    if (!leyendo) return;
 
-    function togglePlay() { 
-        leyendo = !leyendo; 
-        if (!leyendo) window.speechSynthesis.cancel(); 
-        else iniciarLectura(); 
-        actualizarBoton(); 
-    }
+    const frase = frases[indice];
+    document.getElementById("sentence-container").innerText = frase;
 
-    function actualizarBoton() { 
-        const btn = document.getElementById('btnPlay'); 
-        btn.innerHTML = leyendo ? "⏸️" : "▶️"; 
-        btn.className = leyendo ? "circle-btn btn-pause" : "circle-btn btn-play"; 
-    }
-    
-    actualizarVista();
+    await hablar(frase);
+
+    confetti({ particleCount: 80, spread: 70 });
+
+    indice = (indice + 1) % frases.length;
+
+    setTimeout(iniciarLectura, 3000);
+}
+
+function togglePlay() {
+    leyendo = !leyendo;
+    if (!leyendo) window.speechSynthesis.cancel();
+    else iniciarLectura();
+}
+
 </script>
 </body>
 </html>
-
