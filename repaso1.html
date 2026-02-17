@@ -172,10 +172,11 @@ button.circle-btn {
 <body>
 <!-- ==================== BLOQUEO POR REFERRER ==================== -->
 <script>
-  // Bloquea si no viene del sitio permitido
-  const allowedRef = "tu-appcreador24.com";
+  const urlParams = new URLSearchParams(window.location.search);
+  const key = urlParams.get("key");
+  const SECRET_KEY = "layjaedu"; // el token secreto
 
-  if (!document.referrer.includes(allowedRef) && location.hostname !== "tu-appcreador24.com") {
+  if (key !== SECRET_KEY) {
       document.documentElement.innerHTML = "<h2 style='text-align:center;margin-top:40vh;font-family:sans-serif;color:#9c27b0;'>Acceso restringido</h2>";
       throw new Error("Acceso restringido");
   }
@@ -374,5 +375,6 @@ actualizarVista();
 
 </body>
 </html>
+
 
 
