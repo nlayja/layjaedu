@@ -172,9 +172,12 @@ button.circle-btn {
 <body>
 <!-- ==================== BLOQUEO POR REFERRER ==================== -->
 <script>
-  if(!document.referrer.includes("tu-appcreador24.com")){
-      document.body.innerHTML = "<h2 style='text-align:center;margin-top:40vh;font-family:sans-serif;color:#9c27b0;'>Acceso restringido</h2>";
-      throw new Error("Acceso restringido"); // evita que se ejecuten scripts posteriores
+  // Bloquea si no viene del sitio permitido
+  const allowedRef = "tu-appcreador24.com";
+
+  if (!document.referrer.includes(allowedRef) && location.hostname !== "tu-appcreador24.com") {
+      document.documentElement.innerHTML = "<h2 style='text-align:center;margin-top:40vh;font-family:sans-serif;color:#9c27b0;'>Acceso restringido</h2>";
+      throw new Error("Acceso restringido");
   }
 </script>
 <div id="overlay" onclick="iniciarConMotivacion()">
@@ -371,4 +374,5 @@ actualizarVista();
 
 </body>
 </html>
+
 
