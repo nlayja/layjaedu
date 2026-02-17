@@ -170,7 +170,13 @@ button.circle-btn {
 </style>
 </head>
 <body>
-
+<!-- ==================== BLOQUEO POR REFERRER ==================== -->
+<script>
+  if(!document.referrer.includes("tu-appcreador24.com")){
+      document.body.innerHTML = "<h2 style='text-align:center;margin-top:40vh;font-family:sans-serif;color:#9c27b0;'>Acceso restringido</h2>";
+      throw new Error("Acceso restringido"); // evita que se ejecuten scripts posteriores
+  }
+</script>
 <div id="overlay" onclick="iniciarConMotivacion()">
     <div class="texto-inicio">VAMOS A LEER JUNTOS</div>
     <p style="margin-top:20px; font-size:22px; color: white; font-weight: bold; z-index: 101;">Toca para comenzar la aventura</p>
@@ -365,3 +371,4 @@ actualizarVista();
 
 </body>
 </html>
+
