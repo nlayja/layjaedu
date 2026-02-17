@@ -172,12 +172,10 @@ button.circle-btn {
 <body>
 <!-- ==================== BLOQUEO POR REFERRER ==================== -->
 <script>
-  const urlParams = new URLSearchParams(window.location.search);
-  const key = urlParams.get("key");
-  const SECRET_KEY = "layjaedu"; // el token secreto
-
-  if (key !== SECRET_KEY) {
-      document.documentElement.innerHTML = "<h2 style='text-align:center;margin-top:40vh;font-family:sans-serif;color:#9c27b0;'>Acceso restringido</h2>";
+  const SECRET_KEY = "layjaedu"; // solo tú la conoces
+  const APP_KEY = "layjaedu"; // esta debería venir de la app
+  if (APP_KEY !== SECRET_KEY) {
+      document.body.innerHTML = "<h2 style='text-align:center;margin-top:40vh;color:#9c27b0;'>Acceso restringido</h2>";
       throw new Error("Acceso restringido");
   }
 </script>
@@ -375,6 +373,7 @@ actualizarVista();
 
 </body>
 </html>
+
 
 
 
