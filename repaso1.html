@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Súper Lector - 100 Frases Mágicas</title>
+<title>Súper Lector - 50 Frases Mágicas</title>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
@@ -19,7 +19,6 @@
     --fluidez-blue: #03a9f4;
 }
 
-/* Body adaptativo para móviles */
 body {
     font-family: 'Patrick Hand', cursive;
     margin: 0;
@@ -27,7 +26,6 @@ body {
     overflow-x: hidden;
 }
 
-/* Overlay inicial full screen */
 #overlay {
     position: fixed;
     top: 0; left: 0;
@@ -44,7 +42,6 @@ body {
     transition: 0.8s ease-in-out;
 }
 
-/* Texto animado inicio */
 .texto-inicio {
     font-size: clamp(20px, 7vw, 36px);
     font-weight: bold;
@@ -62,7 +59,6 @@ body {
     100% { transform: scale(1.05); }
 }
 
-/* Decoración confetti */
 .decoracion-fiesta {
     position: absolute;
     top: -50px;
@@ -76,7 +72,6 @@ body {
     100% { transform: translateY(110vh) rotate(360deg); }
 }
 
-/* Card frases */
 .card {
     background: white;
     padding: 25px;
@@ -91,7 +86,6 @@ body {
     z-index: 10;
 }
 
-/* Contador estrellas */
 .star-counter {
     position: absolute;
     top: -15px;
@@ -105,7 +99,6 @@ body {
     border: 3px solid #f1c40f;
 }
 
-/* Contenedor de frase */
 #sentence-container {
     font-size: 22px;
     margin: 15px 0;
@@ -117,7 +110,6 @@ body {
     align-items: center;
 }
 
-/* Palabras y sílabas */
 .word-token {
     transition: all 0.2s;
     padding: 3px 8px;
@@ -127,7 +119,6 @@ body {
 .sombra-palabra { background-color: var(--soft-color); color: var(--main-color) !important; transform: scale(1.1);}
 .sombra-fluida { background-color: #e1f5fe; color: var(--fluidez-blue) !important; transform: scale(1.05); }
 
-/* Emoji palabra actual */
 #word-display {
     font-size: 60px;
     font-weight: bold;
@@ -147,7 +138,6 @@ body {
     color: white !important;
 }
 
-/* Botones controles */
 .controls {
     display: flex;
     justify-content: center;
@@ -170,7 +160,6 @@ button.circle-btn {
 .btn-play { background-color: var(--vivid-green); box-shadow: 0 4px 0 #388e3c;}
 .btn-pause { background-color: #ff9800; box-shadow: 0 4px 0 #f57c00; }
 
-/* Texto progreso */
 .progress-text {
     font-size: 14px;
     color: #95a5a6;
@@ -181,13 +170,11 @@ button.circle-btn {
 </head>
 <body>
 
-<!-- Overlay inicio -->
 <div id="overlay" onclick="iniciarConMotivacion()">
     <div class="texto-inicio">VAMOS A LEER JUNTOS</div>
     <p style="margin-top:20px; font-size:20px; color: white; font-weight: bold; z-index: 101;">Toca para comenzar la aventura</p>
 </div>
 
-<!-- Tarjeta frases -->
 <div class="card">
     <div class="star-counter" id="starBadge">⭐ <span id="stars">0</span></div>
     <div id="sentence-container"></div>
@@ -195,7 +182,7 @@ button.circle-btn {
     <div class="controls">
         <button id="btnPlay" class="circle-btn btn-play" onclick="togglePlay()">▶️</button>
     </div>
-    <div class="progress-text">Frase <span id="currentIdx">1</span> de 100</div>
+    <div class="progress-text">Frase <span id="currentIdx">1</span> de 50</div>
 </div>
 
 <script>
@@ -212,11 +199,55 @@ for(let i=0;i<30;i++){
     overlay.appendChild(span);
 }
 
-// Frases ejemplo
-const frasesBase=[
-    {f:"El pato al agua",s:[["El"],["pa","to"],["al"],["a","gua"]]},
-    {f:"Pepe da un beso",s:[["Pe","pe"],["da"],["un"],["be","so"]]},
-    {f:"Mi casa es linda",s:[["Mi"],["ca","sa"],["es"],["lin","da"]]}
+// Frases actualizadas para niños 6-7 años con sílabas
+const frasesBase = [
+{f:"El pato se mueve",s:[["El"],["pa","to"],["se"],["mo","ve"]]},
+{f:"Ella pisa la cama",s:[["e-lla"],["pi","sa"],["la"],["ca","ma"]]},
+{f:"Esa cuna es mía",s:[["e-sa"],["cu","na"],["es"],["mí","a"]]},
+{f:"El taco es rico",s:[["El"],["ta","co"],["es"],["ri","co"]]},
+{f:"Ema mira su pie",s:[["E","ma"],["mi","ra"],["su"],["pi-e"]]},
+{f:"El coco cae",s:[["El"],["co","co"],["ca","e"]]},
+{f:"Tío mete la cosa",s:[["Tí","o"],["me","te"],["la"],["co","sa"]]},
+{f:"Tía toca la coca",s:[["Tí","a"],["to","ca"],["la"],["co","ca"]]},
+{f:"Elsa mira la cama",s:[["El","sa"],["mi","ra"],["la"],["ca","ma"]]},
+{f:"Ella come un taco",s:[["e-lla"],["co","me"],["un"],["ta","co"]]},
+{f:"Esa cuna toca",s:[["e-sa"],["cu","na"],["to","ca"]]},
+{f:"El pie es grande",s:[["El"],["pi-e"],["es"],["gran","de"]]},
+{f:"Ema pisa la cama",s:[["E","ma"],["pi","sa"],["la"],["ca","ma"]]},
+{f:"Tío mira su coco",s:[["Tí","o"],["mi","ra"],["su"],["co","co"]]},
+{f:"Tía mete la cuna",s:[["Tí","a"],["me","te"],["la"],["cu","na"]]},
+{f:"Elsa toca su pie",s:[["El","sa"],["to","ca"],["su"],["pi-e"]]},
+{f:"Ella pisa la cosa",s:[["e-lla"],["pi","sa"],["la"],["co","sa"]]},
+{f:"Esa cama es suya",s:[["e-sa"],["ca","ma"],["es"],["su","ya"]]},
+{f:"El taco toca su pie",s:[["El"],["ta","co"],["to","ca"],["su"],["pi-e"]]},
+{f:"Ema mira la coca",s:[["E","ma"],["mi","ra"],["la"],["co","ca"]]},
+{f:"Tío pisa la cama",s:[["Tí","o"],["pi","sa"],["la"],["ca","ma"]]},
+{f:"Tía toca un taco",s:[["Tí","a"],["to","ca"],["un"],["ta","co"]]},
+{f:"Elsa pisa la cuna",s:[["El","sa"],["pi","sa"],["la"],["cu","na"]]},
+{f:"Ella mira su pie",s:[["e-lla"],["mi","ra"],["su"],["pi-e"]]},
+{f:"Esa toca la cama",s:[["e-sa"],["to","ca"],["la"],["ca","ma"]]},
+{f:"El coco pisa",s:[["El"],["co","co"],["pi","sa"]]},
+{f:"Ema toca la cosa",s:[["E","ma"],["to","ca"],["la"],["co","sa"]]},
+{f:"Tío pisa su pie",s:[["Tí","o"],["pi","sa"],["su"],["pi-e"]]},
+{f:"Tía mira la cama",s:[["Tí","a"],["mi","ra"],["la"],["ca","ma"]]},
+{f:"Elsa toca el taco",s:[["El","sa"],["to","ca"],["el"],["ta","co"]]},
+{f:"Ella pisa la cuna",s:[["e-lla"],["pi","sa"],["la"],["cu","na"]]},
+{f:"Esa mira su coca",s:[["e-sa"],["mi","ra"],["su"],["co","ca"]]},
+{f:"El taco pisa",s:[["El"],["ta","co"],["pi","sa"]]},
+{f:"Ema mira la cama",s:[["E","ma"],["mi","ra"],["la"],["ca","ma"]]},
+{f:"Tío toca la cosa",s:[["Tí","o"],["to","ca"],["la"],["co","sa"]]},
+{f:"Tía pisa su pie",s:[["Tí","a"],["pi","sa"],["su"],["pi-e"]]},
+{f:"Elsa mira la cuna",s:[["El","sa"],["mi","ra"],["la"],["cu","na"]]},
+{f:"Ella toca la cama",s:[["e-lla"],["to","ca"],["la"],["ca","ma"]]},
+{f:"Esa pisa su pie",s:[["e-sa"],["pi","sa"],["su"],["pi-e"]]},
+{f:"El coco toca",s:[["El"],["co","co"],["to","ca"]]},
+{f:"Ema pisa la cama",s:[["E","ma"],["pi","sa"],["la"],["ca","ma"]]},
+{f:"Tío mira la cuna",s:[["Tí","o"],["mi","ra"],["la"],["cu","na"]]},
+{f:"Tía toca la coca",s:[["Tí","a"],["to","ca"],["la"],["co","ca"]]},
+{f:"Elsa pisa su pie",s:[["El","sa"],["pi","sa"],["su"],["pi-e"]]},
+{f:"Ella mira el taco",s:[["e-lla"],["mi","ra"],["el"],["ta","co"]]},
+{f:"Esa toca la cama",s:[["e-sa"],["to","ca"],["la"],["ca","ma"]]},
+{f:"El pie pisa",s:[["El"],["pi-e"],["pi","sa"]]}
 ];
 
 // Mezclar frases
